@@ -2,7 +2,9 @@ package sfe.os;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -12,6 +14,8 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -33,7 +37,6 @@ public class Main extends Application {
         this.stage.setFullScreenExitHint("");
 
         fileSystem = new FileSystem();
-
         desktop();
 
         stage.show();
@@ -103,15 +106,19 @@ public class Main extends Application {
     private void openPath(Folder currFolder) {
         TilePane tiles = new TilePane();
         tiles.setPrefColumns(6);
-        tiles.setHgap(4);
-        tiles.setVgap(4);
+        tiles.setHgap(25);
+        tiles.setVgap(30);
+        tiles.setPadding(new Insets(15));
+
 
         LinkedList<Directory> dirs = currFolder.getChildren();
 
         Label view[] = new Label[dirs.size()];
         for (int i = 0; i < view.length; i++) {
+
             Directory dir = dirs.get(i);
             view[i] = new Label(dir.name);
+            final Label currView = view[i];
             if (dir instanceof Folder) {
                 view[i].setGraphic(new ImageView("res/folder.png"));
             } else {
@@ -128,6 +135,52 @@ public class Main extends Application {
                         break;
                 }
             }
+            view[i].setContentDisplay(ContentDisplay.TOP);
+            view[i].setOnMouseClicked(new EventHandler<javafx.scene.input.MouseEvent>() {
+                @Override
+                public void handle(javafx.scene.input.MouseEvent event) {
+                    if(event.getButton().equals(MouseButton.PRIMARY)) {
+                        if(event.getClickCount() == 2) {
+                            initRootLayout();
+                            openPath((Folder) dir);
+                            stage.setScene(new Scene(explorer));
+                            stage.setFullScreen(true);
+                        }
+                    }else if(event.getButton().equals(MouseButton.SECONDARY)) {
+                        final ContextMenu rightClickMenu = new ContextMenu();
+                        MenuItem openItem = new MenuItem("Open");
+                        openItem.setOnAction(e -> {
+                            if (dir instanceof Folder) {
+                                openPath((Folder) dir);
+                            } else {
+                                if (((File) dir).getExtension().equals("txt")) {
+                                    // open this file using text editor.
+                                } else if (((File) dir).getExtension().equals("mo3")) {
+                                    // open this file using mp3 player.
+                                }
+                            }
+                        });
+                        MenuItem deleteItem = new MenuItem("Delete");
+                        deleteItem.setOnAction(e -> {
+                            fileSystem.delete(dir);
+                            openPath(currFolder);
+                        });
+                        MenuItem copyItem = new MenuItem("Copy");
+                        copyItem.setOnAction(e -> fileSystem.copy(dir));
+                        MenuItem cutItem = new MenuItem("Cut");
+                        cutItem.setOnAction(event1 -> fileSystem.cut(dir));
+                        SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
+                        SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
+                        SeparatorMenuItem separatorMenuItem3 = new SeparatorMenuItem();
+                        MenuItem propertiesItem = new MenuItem("Properties");
+                        propertiesItem.setOnAction(event1 -> {
+
+                        });
+                        rightClickMenu.getItems().addAll(openItem, separatorMenuItem1, copyItem, cutItem, separatorMenuItem2, deleteItem, separatorMenuItem3, propertiesItem);
+                        rightClickMenu.show(currView, Side.RIGHT, -2, 0);
+                    }
+                }
+            });
             tiles.getChildren().add(view[i]);
         }
 
