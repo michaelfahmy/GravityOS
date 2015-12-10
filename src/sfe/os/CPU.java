@@ -1,12 +1,13 @@
 package sfe.os;
 
-import java.util.*;
+import java.util.LinkedList;
 
 
 class Process {
 
     private int size;
     private int duration;
+    private String data;
     public int id;
     int remaining_time;
 
@@ -32,54 +33,66 @@ class Process {
     public int getDuration() {
         return duration;
     }
+
+    public String getData() {
+        return data;
+    }
 }
 
 public class CPU {
-
-    Schedular s = new Schedular();
-    Memory memory = new Memory();
-
-    public CPU() {
-        s.list = null;
+    int index=0;
+    Memory memory;
+    LinkedList<Process> list=new LinkedList<>() ;
+    public CPU () {
+        this.memory = new Memory();
     }
 
-    void addProcess(Process e) {
-        if (memory.Count_free_frame() * memory.getMax_Frame_size() >= e.getSize()) {
-            memory.Write(e.id, e.getSize());
-            if (!s.list.isEmpty()) {
-                s.list.add((s.index + 1), e);
+    public void addProcess(Process e,int index,LinkedList list) {
+
+        if (memory.write(e.id, e.getData())) {
+            if (!list.isEmpty()) {
+                list.add((index + 1), e);
             } else {
-                s.list.add(e);
+                list.add(e);
             }
 
             System.out.println("process " + e.id + " is added ");
         } else {
-            System.out.println("memory low");
-            s.Wqueue.add(e);
+
+            memory.replace(e.id, e.getData());
+            if (list.isEmpty()) {
+                list.add((index + 1), e);
+            } else {
+                list.add(e);
+            }
+
+            System.out.println("process " + e.id + " is added ");
         }
     }
 }
 
+
 class Schedular {
 
-    CPU cpu;
+    CPU Cpu;
     int k = 0;
     public int id = 0;
     int count = 0;
     int quantum = 10;
     int index = 0;
-    Queue<Process> Wqueue = new LinkedList<Process>();
-    LinkedList<Process> list = new LinkedList<Process>();
+    LinkedList<Process> list;
 
     public Schedular() {
+        this.Cpu = new CPU();
+        list = new LinkedList<>();
     }
 
     public void RR_Schedule() {
 
         Process p1 = new Process(100, 50, ++id);
         Process p2 = new Process(100, 40, ++id);
-        cpu.addProcess(p1);
-        cpu.addProcess(p2);
+        Cpu.addProcess(p1,index,list);
+        Cpu.addProcess(p2,index,list);
 
         while (!list.isEmpty()) {
             count++;
@@ -92,22 +105,19 @@ class Schedular {
 
                 } else {
                     System.out.println("process " + list.get(i).id + " is finished");
-                    cpu.memory.Del(list.get(i).id);
+                    Cpu.memory.del(list.get(i).id);
                     list.remove(i);
-                    if (!Wqueue.isEmpty()) {
-                        if (cpu.memory.Count_free_frame() * cpu.memory.getMax_Frame_size() >= Wqueue.peek().getSize()) {
-                            cpu.addProcess(Wqueue.poll());
-                        }
-                    }
+                    i--;
                 }
             }
             k = 0;
             if (count == 1) {
                 Process p3 = new Process(100, 70, ++id);
-                cpu.addProcess(p3);
+                Cpu.addProcess(p3,index,list);
                 k = list.indexOf(p3);
             }
         }
 
     }
 }
+
