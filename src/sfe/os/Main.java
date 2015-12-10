@@ -2,7 +2,6 @@ package sfe.os;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -14,8 +13,6 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -58,6 +55,7 @@ public class Main extends Application {
         });
         desktop.getChildren().addAll(myPC);
         stage.setScene(new Scene(desktop));
+        stage.setFullScreen(true);
     }
 
     private void initRootLayout() {
@@ -67,36 +65,53 @@ public class Main extends Application {
         ToolBar toolBar = new ToolBar();
 
         // populating MenuBar
-        Menu file = new Menu("File");
+        Menu fileMenu = new Menu("File");
         {
             MenuItem newFileMenu = new MenuItem("New File");
             newFileMenu.setOnAction(event -> newFileDialog());
             MenuItem close = new MenuItem("Close");
             close.setOnAction(event -> System.exit(0));
-            file.getItems().addAll(newFileMenu, close);
+            fileMenu.getItems().addAll(newFileMenu, close);
         }
-        Menu edit = new Menu("Edit");
+        Menu editMenu = new Menu("Edit");
         {
             MenuItem copyMenu = new MenuItem("Copy");
             MenuItem cutMenu = new MenuItem("Cut");
             MenuItem pasteMenu = new MenuItem("Paste");
+            pasteMenu.setOnAction(event -> {fileSystem.paste(); openPath(fileSystem.getCurrentFolder());});
             MenuItem deleteMenu = new MenuItem("Delete");
-            edit.getItems().addAll(copyMenu, cutMenu, pasteMenu, deleteMenu);
+            editMenu.getItems().addAll(copyMenu, cutMenu, pasteMenu, deleteMenu);
         }
-        menuBar.getMenus().addAll(file, edit);
+        menuBar.getMenus().addAll(fileMenu, editMenu);
 
         // populating ToolBar
         Button back = new Button();
             back.setGraphic(new ImageView("res/icon-back.png"));
-            back.setOnAction(event -> openPath(fileSystem.getCurrentFolder().parent));
+            back.setOnAction(event -> {
+                if (fileSystem.getCurrentFolder().name.equals("root")) {
+                    desktop();
+                } else {
+                    fileSystem.back();
+                    openPath(fileSystem.getCurrentFolder());
+                }
+            });
         Button newFile = new Button();
             newFile.setGraphic(new ImageView("res/newFile.png"));
             newFile.setOnAction(event -> newFileDialog());
         Button newFolder = new Button();
             newFolder.setGraphic(new ImageView("res/newFolder.png"));
+            newFolder.setOnAction(event -> newFolderDialog());
+        Button copyBtn = new Button();
+            copyBtn.setGraphic(new ImageView("res/copy.png"));
+        Button cutBtn = new Button();
+            cutBtn.setGraphic(new ImageView("res/cut.png"));
+        Button pasteBtn = new Button();
+            pasteBtn.setGraphic(new ImageView("res/paste.png"));
+            pasteBtn.setOnAction(event -> { fileSystem.paste(); openPath(fileSystem.getCurrentFolder()); });
         Button delete = new Button();
             delete.setGraphic(new ImageView("res/delete.png"));
-        toolBar.getItems().addAll(back, newFile, newFolder, delete);
+
+        toolBar.getItems().addAll(back, newFile, newFolder, copyBtn, cutBtn, pasteBtn, delete);
 
         topContainer.getChildren().addAll(menuBar, toolBar);
 
@@ -110,20 +125,18 @@ public class Main extends Application {
         tiles.setVgap(30);
         tiles.setPadding(new Insets(15));
 
-
         LinkedList<Directory> dirs = currFolder.getChildren();
 
         Label view[] = new Label[dirs.size()];
         for (int i = 0; i < view.length; i++) {
-
             Directory dir = dirs.get(i);
             view[i] = new Label(dir.name);
-            final Label currView = view[i];
+            view[i].setContentDisplay(ContentDisplay.TOP);
             if (dir instanceof Folder) {
                 view[i].setGraphic(new ImageView("res/folder.png"));
             } else {
                 File file = (File) dir;
-                switch (file.getExtension()) {
+                switch (file.extension) {
                     case "txt":
                         view[i].setGraphic(new ImageView("res/txt.png"));
                         break;
@@ -135,50 +148,39 @@ public class Main extends Application {
                         break;
                 }
             }
-            view[i].setContentDisplay(ContentDisplay.TOP);
-            view[i].setOnMouseClicked(new EventHandler<javafx.scene.input.MouseEvent>() {
-                @Override
-                public void handle(javafx.scene.input.MouseEvent event) {
-                    if(event.getButton().equals(MouseButton.PRIMARY)) {
-                        if(event.getClickCount() == 2) {
-                            initRootLayout();
+            final Label currView = view[i];
+            view[i].setOnMouseClicked(event -> {
+                if(event.getButton().equals(MouseButton.PRIMARY)) {
+                    if(event.getClickCount() == 2) {
+                        fileSystem.open(dir);
+                        if (dir instanceof Folder)
                             openPath((Folder) dir);
-                            stage.setScene(new Scene(explorer));
-                            stage.setFullScreen(true);
-                        }
-                    }else if(event.getButton().equals(MouseButton.SECONDARY)) {
-                        final ContextMenu rightClickMenu = new ContextMenu();
-                        MenuItem openItem = new MenuItem("Open");
-                        openItem.setOnAction(e -> {
-                            if (dir instanceof Folder) {
-                                openPath((Folder) dir);
-                            } else {
-                                if (((File) dir).getExtension().equals("txt")) {
-                                    // open this file using text editor.
-                                } else if (((File) dir).getExtension().equals("mo3")) {
-                                    // open this file using mp3 player.
-                                }
-                            }
-                        });
-                        MenuItem deleteItem = new MenuItem("Delete");
-                        deleteItem.setOnAction(e -> {
-                            fileSystem.delete(dir);
-                            openPath(currFolder);
-                        });
-                        MenuItem copyItem = new MenuItem("Copy");
-                        copyItem.setOnAction(e -> fileSystem.copy(dir));
-                        MenuItem cutItem = new MenuItem("Cut");
-                        cutItem.setOnAction(event1 -> fileSystem.cut(dir));
-                        SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
-                        SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
-                        SeparatorMenuItem separatorMenuItem3 = new SeparatorMenuItem();
-                        MenuItem propertiesItem = new MenuItem("Properties");
-                        propertiesItem.setOnAction(event1 -> {
-
-                        });
-                        rightClickMenu.getItems().addAll(openItem, separatorMenuItem1, copyItem, cutItem, separatorMenuItem2, deleteItem, separatorMenuItem3, propertiesItem);
-                        rightClickMenu.show(currView, Side.RIGHT, -2, 0);
                     }
+                } else if(event.getButton().equals(MouseButton.SECONDARY)) {
+                    final ContextMenu rightClickMenu = new ContextMenu();
+                    MenuItem openItem = new MenuItem("Open");
+                    openItem.setOnAction(e -> {
+                        fileSystem.open(dir);
+                        if (dir instanceof Folder)
+                            openPath((Folder) dir);
+                    });
+                    MenuItem deleteItem = new MenuItem("Delete");
+                    deleteItem.setOnAction(e -> {
+                        fileSystem.delete(dir);
+                        openPath(currFolder);
+                    });
+                    MenuItem copyItem = new MenuItem("Copy");
+                    copyItem.setOnAction(e -> fileSystem.copy(dir));
+                    MenuItem cutItem = new MenuItem("Cut");
+                    cutItem.setOnAction(e -> fileSystem.cut(dir));
+                    MenuItem propertiesItem = new MenuItem("Properties");
+
+                    SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
+                    SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
+                    SeparatorMenuItem separatorMenuItem3 = new SeparatorMenuItem();
+
+                    rightClickMenu.getItems().addAll(openItem, separatorMenuItem1, copyItem, cutItem, separatorMenuItem2, deleteItem, separatorMenuItem3, propertiesItem);
+                    rightClickMenu.show(currView, Side.RIGHT, -25, 30);
                 }
             });
             tiles.getChildren().add(view[i]);
@@ -199,9 +201,9 @@ public class Main extends Application {
         grid.setPadding(new Insets(20, 150, 10, 10));
 
         TextField textField = new TextField();
-        textField.setPromptText("Username");
+        textField.setPromptText("File name");
 
-        grid.add(new Label("Username:"), 0, 0);
+        grid.add(new Label("Name:"), 0, 0);
         grid.add(textField, 1, 0);
 
         ComboBox<String> comboBox = new ComboBox<>();
@@ -245,8 +247,20 @@ public class Main extends Application {
                     break;
             }
         });
-
         openPath(fileSystem.getCurrentFolder());
+    }
+
+    private void newFolderDialog() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("New Folder");
+        dialog.setHeaderText("Header text mlosh lzma bs 3agbny xD");
+        dialog.setGraphic(new ImageView("res/newFolder.png"));
+        dialog.setContentText("Folder name:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(name -> fileSystem.newFolder(name));
+        openPath(fileSystem.getCurrentFolder());
+
     }
 
 }

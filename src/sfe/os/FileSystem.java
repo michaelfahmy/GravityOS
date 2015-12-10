@@ -40,10 +40,6 @@ class File extends Directory {
         this.permission = permission;
         this.extension = extension;
     }
-
-    public String getExtension() {
-        return extension;
-    }
 }
  
 public class FileSystem {
@@ -98,17 +94,19 @@ public class FileSystem {
                 if (toBeOpened instanceof Folder) {
                     this.currentFolder = (Folder) toBeOpened;
                 } else {
-                    if (((File) toBeOpened).extension.equals(".txt")) {
-                        // Open text editor..  
+                    if (((File) toBeOpened).extension.equals("txt")) {
+                        // Open text editor..
+                        System.out.println("Opening txt file");
                     } else {
-                        // Open mp3 player. 
+                        // Open mp3 player.
+                        System.out.println("Opening mp3 file");
                     }
                 }
             }
         }
     }
  
-    void Back() {
+    void back() {
         this.currentFolder = this.currentFolder.parent;
     }
  
