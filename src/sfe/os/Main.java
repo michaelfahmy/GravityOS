@@ -136,7 +136,7 @@ public class Main extends Application {
             view[i] = new Label(dir.name);
             view[i].setContentDisplay(ContentDisplay.TOP);
             view[i].setPadding(new Insets(0, 5, 0, 5));
-            view[i].setGraphicTextGap(-5);
+            view[i].setGraphicTextGap(1);
             view[i].setWrapText(true);
             view[i].setContextMenu(dirRightClickMenu(dir));
             setIcon(dir, view[i]);
@@ -174,8 +174,20 @@ public class Main extends Application {
                 case "txt":
                     view.setGraphic(new ImageView("res/txt.png"));
                     break;
+                case "jpg":
+                    view.setGraphic(new ImageView("res/jpg.png"));
+                    break;
                 case "mp3":
                     view.setGraphic(new ImageView("res/mp3.png"));
+                    break;
+                case "mp4":
+                    view.setGraphic(new ImageView("res/mp4.png"));
+                    break;
+                case "pdf":
+                    view.setGraphic(new ImageView("res/pdf.png"));
+                    break;
+                case "html":
+                    view.setGraphic(new ImageView("res/html.png"));
                     break;
                 default:
                     view.setGraphic(new ImageView("res/file.png"));
@@ -232,9 +244,10 @@ public class Main extends Application {
         grid.add(new Label("Name:"), 0, 0);
         grid.add(textField, 1, 0);
 
+
         ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.getItems().addAll("txt","mp3");
-        comboBox.setValue("txt");
+        comboBox.getItems().addAll("Text (txt)", "Image (jpg)", "Sound (mp3)", "Video (mp4)", "PDF (pdf)", "Website (html)");
+        comboBox.setValue("Text (txt)");
 
         grid.add(new Label("File type:"), 0, 1);
         grid.add(comboBox, 1, 1);
@@ -265,11 +278,23 @@ public class Main extends Application {
             String name = pair.getKey();
             String type = pair.getValue();
             switch (type) {
-                case "txt":
-                    fileSystem.newTxtFile(name);
+                case "Text (txt)":
+                    fileSystem.newFile(name, "txt", "r/w");
                     break;
-                case "mp3":
-                    fileSystem.newMp3File(name);
+                case "Image (jpg)":
+                    fileSystem.newFile(name, "jpg", "r/w");
+                    break;
+                case "Sound (mp3)":
+                    fileSystem.newFile(name, "mp3", "r/w");
+                    break;
+                case "Video (mp4)":
+                    fileSystem.newFile(name, "mp4", "r/w");
+                    break;
+                case "PDF (pdf)":
+                    fileSystem.newFile(name, "pdf", "r/w");
+                    break;
+                case "Website (html)":
+                    fileSystem.newFile(name, "html", "r");
                     break;
             }
         });
