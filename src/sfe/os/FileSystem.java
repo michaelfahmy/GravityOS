@@ -22,7 +22,7 @@ class Folder extends Directory {
 
     public Folder(String name, String path, Folder parent) {
         super(name, path, parent);
-        children = new LinkedList<Directory>();
+        children = new LinkedList<>();
     }
 
     public LinkedList<Directory> getChildren() {
@@ -35,7 +35,7 @@ class File extends Directory {
     String permission;
     String extension;
 
-    public File(String name, String path, Folder parent, String permission, String extension) {
+    public File(String name, String extension, String path, Folder parent, String permission) {
         super(name + "." + extension, path, parent);
         this.permission = permission;
         this.extension = extension;
@@ -49,12 +49,21 @@ public class FileSystem {
  
     private final Folder root;
     private Folder currentFolder;
+    private Directory selected = null;
     Directory toBePasted = null;
     String whichProcess = COPY_PROCESS;
  
     public FileSystem() {
         root = new Folder("root", "", null);
         currentFolder = root;
+    }
+
+    public void select(Directory selected) {
+        this.selected = selected;
+    }
+
+    public Directory getSelected() {
+        return selected;
     }
 
     public Folder getCurrentFolder() {
@@ -67,16 +76,20 @@ public class FileSystem {
         this.currentFolder.children.add(child);
     }
  
-    void newTxtFile(String name) {
-        String path = this.currentFolder.path + "/" + name + ".txt";
-        File child = new File(name, path, this.currentFolder, "read/write", "txt");
+    void newFile(String name, String ext, String permission) {
+        String path = this.currentFolder.path + "/" + name + ext;
+        File child = new File(name, ext, path, this.currentFolder, permission);
         this.currentFolder.children.add(child);
     }
- 
-    void newMp3File(String name) {
-        String path = this.currentFolder.path + "/" + name + ".mp3";
-        File child = new File(name, path, this.currentFolder, "read-only", "mp3");
-        this.currentFolder.children.add(child);
+
+
+    void  rename(Directory toBeRenamed, String name) {
+        for (int i = 0; i < this.currentFolder.children.size(); ++i) {
+            if (toBeRenamed == this.currentFolder.children.get(i)) {
+                this.currentFolder.children.get(i).name = name;
+                break;
+            }
+        }
     }
  
     void delete(Directory toBeDeleted) {
@@ -94,12 +107,25 @@ public class FileSystem {
                 if (toBeOpened instanceof Folder) {
                     this.currentFolder = (Folder) toBeOpened;
                 } else {
-                    if (((File) toBeOpened).extension.equals("txt")) {
-                        // Open text editor..
-                        System.out.println("Opening txt file");
-                    } else {
-                        // Open mp3 player.
-                        System.out.println("Opening mp3 file");
+                    switch (((File) toBeOpened).extension) {
+                        case "txt":
+                            System.out.println("Opening notepad");
+                            break;
+                        case "jpg":
+                            System.out.println("Opening image viewer");
+                            break;
+                        case "mp3":
+                            System.out.println("Opening music player");
+                            break;
+                        case "mp4":
+                            System.out.println("Opening video player");
+                            break;
+                        case "pdf":
+                            System.out.println("Opening pdf viewer");
+                            break;
+                        case "html":
+                            System.out.println("Opening browser");
+                            break;
                     }
                 }
             }

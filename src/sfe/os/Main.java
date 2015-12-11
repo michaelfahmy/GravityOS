@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -12,11 +11,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import java.awt.event.ActionEvent;
-import java.util.LinkedList;
 import java.util.Optional;
 
 public class Main extends Application {
@@ -48,7 +46,7 @@ public class Main extends Application {
             if(event.getButton().equals(MouseButton.PRIMARY)) {
                 if(event.getClickCount() == 2) {
                     initRootLayout();
-                    openPath(fileSystem.getCurrentFolder());
+                    refresh();
                     stage.setScene(new Scene(explorer));
                     stage.setFullScreen(true);
                 }
@@ -79,7 +77,7 @@ public class Main extends Application {
             MenuItem copyMenu = new MenuItem("Copy");
             MenuItem cutMenu = new MenuItem("Cut");
             MenuItem pasteMenu = new MenuItem("Paste");
-            pasteMenu.setOnAction(event -> {fileSystem.paste(); openPath(fileSystem.getCurrentFolder());});
+            pasteMenu.setOnAction(event -> {fileSystem.paste(); refresh();});
             MenuItem deleteMenu = new MenuItem("Delete");
             editMenu.getItems().addAll(copyMenu, cutMenu, pasteMenu, deleteMenu);
         }
@@ -93,7 +91,7 @@ public class Main extends Application {
                 desktop();
             } else {
                 fileSystem.back();
-                openPath(fileSystem.getCurrentFolder());
+                refresh();
             }
         });
         Button newFile = new Button();
@@ -108,7 +106,7 @@ public class Main extends Application {
         cutBtn.setGraphic(new ImageView("res/cut.png"));
         Button pasteBtn = new Button();
         pasteBtn.setGraphic(new ImageView("res/paste.png"));
-        pasteBtn.setOnAction(event -> { fileSystem.paste(); openPath(fileSystem.getCurrentFolder()); });
+        pasteBtn.setOnAction(event -> { fileSystem.paste(); refresh(); });
         Button delete = new Button();
         delete.setGraphic(new ImageView("res/delete.png"));
 
@@ -119,12 +117,12 @@ public class Main extends Application {
         explorer.setTop(topContainer);
     }
 
-    private void openPath(Folder currFolder) {
+    private void refresh() {
         TilePane tiles = new TilePane();
-        tiles.setPrefColumns(6);
+        tiles.setPrefColumns(8);
         tiles.setHgap(25);
         tiles.setVgap(30);
-        tiles.setPadding(new Insets(15));
+        tiles.setPadding(new Insets(20));
         tiles.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -136,7 +134,7 @@ public class Main extends Application {
                     MenuItem propertiesItem = new MenuItem("Properties");
                     newFolderItem.setOnAction(event1 -> newFolderDialog());
                     newFileItem.setOnAction(event1 ->  newFileDialog());
-                    pasteItem.setOnAction(event1 -> { fileSystem.paste(); openPath(fileSystem.getCurrentFolder()); });
+                    pasteItem.setOnAction(event1 -> { fileSystem.paste(); refresh(); });
                     propertiesItem.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
                         @Override
                         public void handle(javafx.event.ActionEvent event) {
@@ -152,69 +150,107 @@ public class Main extends Application {
                 }
             }
         });
+        tiles.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        populateTiles(tiles);
+        explorer.setCenter(tiles);
+    }
 
-        LinkedList<Directory> dirs = currFolder.getChildren();
-
-        Label view[] = new Label[dirs.size()];
+    private void populateTiles(TilePane tiles) {
+        Label view[] = new Label[fileSystem.getCurrentFolder().getChildren().size()];
         for (int i = 0; i < view.length; i++) {
-            Directory dir = dirs.get(i);
+            Directory dir = fileSystem.getCurrentFolder().getChildren().get(i);
             view[i] = new Label(dir.name);
             view[i].setContentDisplay(ContentDisplay.TOP);
-            if (dir instanceof Folder) {
-                view[i].setGraphic(new ImageView("res/folder.png"));
-            } else {
-                File file = (File) dir;
-                switch (file.extension) {
-                    case "txt":
-                        view[i].setGraphic(new ImageView("res/txt.png"));
-                        break;
-                    case "mp3":
-                        view[i].setGraphic(new ImageView("res/mp3.png"));
-                        break;
-                    default:
-                        view[i].setGraphic(new ImageView("res/file.png"));
-                        break;
-                }
-            }
-            final Label currView = view[i];
+            view[i].setPadding(new Insets(0, 5, 0, 5));
+            view[i].setGraphicTextGap(1);
+            view[i].setWrapText(true);
+            view[i].setContextMenu(dirRightClickMenu(dir));
+            setIcon(dir, view[i]);
             view[i].setOnMouseClicked(event -> {
                 if(event.getButton().equals(MouseButton.PRIMARY)) {
+                    if(event.getClickCount() == 1) {
+                        fileSystem.select(dir);
+                    }
                     if(event.getClickCount() == 2) {
                         fileSystem.open(dir);
                         if (dir instanceof Folder)
-                            openPath((Folder) dir);
+                            refresh();
                     }
-                } else if(event.getButton().equals(MouseButton.SECONDARY)) {
-                    final ContextMenu rightClickMenu = new ContextMenu();
-                    MenuItem openItem = new MenuItem("Open");
-                    openItem.setOnAction(e -> {
-                        fileSystem.open(dir);
-                        if (dir instanceof Folder)
-                            openPath((Folder) dir);
-                    });
-                    MenuItem deleteItem = new MenuItem("Delete");
-                    deleteItem.setOnAction(e -> {
-                        fileSystem.delete(dir);
-                        openPath(currFolder);
-                    });
-                    MenuItem copyItem = new MenuItem("Copy");
-                    copyItem.setOnAction(e -> fileSystem.copy(dir));
-                    MenuItem cutItem = new MenuItem("Cut");
-                    cutItem.setOnAction(e -> fileSystem.cut(dir));
-                    MenuItem propertiesItem = new MenuItem("Properties");
-
-                    SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
-                    SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
-                    SeparatorMenuItem separatorMenuItem3 = new SeparatorMenuItem();
-
-                    rightClickMenu.getItems().addAll(openItem, separatorMenuItem1, copyItem, cutItem, separatorMenuItem2, deleteItem, separatorMenuItem3, propertiesItem);
-                    rightClickMenu.show(currView, Side.RIGHT, -25, 30);
                 }
+            });
+            final Label currView = view[i];
+            view[i].setOnMouseEntered(event -> {
+                currView.setScaleX(1.2);
+                currView.setScaleY(1.2);
+            });
+            view[i].setOnMouseExited(event -> {
+                currView.setScaleX(1);
+                currView.setScaleY(1);
             });
             tiles.getChildren().add(view[i]);
         }
+    }
 
-        explorer.setCenter(tiles);
+    private void setIcon(Directory dir, Label view) {
+        if (dir instanceof Folder) {
+            view.setGraphic(new ImageView("res/folder.png"));
+        } else {
+            File file = (File) dir;
+            switch (file.extension) {
+                case "txt":
+                    view.setGraphic(new ImageView("res/txt.png"));
+                    break;
+                case "jpg":
+                    view.setGraphic(new ImageView("res/jpg.png"));
+                    break;
+                case "mp3":
+                    view.setGraphic(new ImageView("res/mp3.png"));
+                    break;
+                case "mp4":
+                    view.setGraphic(new ImageView("res/mp4.png"));
+                    break;
+                case "pdf":
+                    view.setGraphic(new ImageView("res/pdf.png"));
+                    break;
+                case "html":
+                    view.setGraphic(new ImageView("res/html.png"));
+                    break;
+                default:
+                    view.setGraphic(new ImageView("res/file.png"));
+                    break;
+            }
+        }
+    }
+
+    private ContextMenu dirRightClickMenu(Directory dir) {
+        ContextMenu rightClickMenu = new ContextMenu();
+        MenuItem openItem = new MenuItem("Open");
+        openItem.setOnAction(e -> {
+            fileSystem.open(dir);
+            if (dir instanceof Folder)
+                refresh();
+        });
+
+        MenuItem copyItem = new MenuItem("Copy");
+        copyItem.setOnAction(e -> fileSystem.copy(dir));
+        MenuItem cutItem = new MenuItem("Cut");
+        cutItem.setOnAction(e -> fileSystem.cut(dir));
+
+        MenuItem renameItem = new MenuItem("Rename");
+        renameItem.setOnAction(event1 -> renameDir(dir));
+        MenuItem deleteItem = new MenuItem("Delete");
+        deleteItem.setOnAction(e -> {
+            fileSystem.delete(dir);
+            refresh();
+        });
+        MenuItem propertiesItem = new MenuItem("Properties");
+
+        SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
+        SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
+        SeparatorMenuItem separatorMenuItem3 = new SeparatorMenuItem();
+
+        rightClickMenu.getItems().addAll(openItem, separatorMenuItem1, copyItem, cutItem, separatorMenuItem2, renameItem, deleteItem, separatorMenuItem3, propertiesItem);
+        return rightClickMenu;
     }
 
     private void newFileDialog() {
@@ -234,9 +270,10 @@ public class Main extends Application {
         grid.add(new Label("Name:"), 0, 0);
         grid.add(textField, 1, 0);
 
+
         ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.getItems().addAll("txt","mp3");
-        comboBox.setValue("txt");
+        comboBox.getItems().addAll("Text (txt)", "Image (jpg)", "Sound (mp3)", "Video (mp4)", "PDF (pdf)", "Website (html)");
+        comboBox.setValue("Text (txt)");
 
         grid.add(new Label("File type:"), 0, 1);
         grid.add(comboBox, 1, 1);
@@ -267,15 +304,27 @@ public class Main extends Application {
             String name = pair.getKey();
             String type = pair.getValue();
             switch (type) {
-                case "txt":
-                    fileSystem.newTxtFile(name);
+                case "Text (txt)":
+                    fileSystem.newFile(name, "txt", "r/w");
                     break;
-                case "mp3":
-                    fileSystem.newMp3File(name);
+                case "Image (jpg)":
+                    fileSystem.newFile(name, "jpg", "r/w");
+                    break;
+                case "Sound (mp3)":
+                    fileSystem.newFile(name, "mp3", "r/w");
+                    break;
+                case "Video (mp4)":
+                    fileSystem.newFile(name, "mp4", "r/w");
+                    break;
+                case "PDF (pdf)":
+                    fileSystem.newFile(name, "pdf", "r/w");
+                    break;
+                case "Website (html)":
+                    fileSystem.newFile(name, "html", "r");
                     break;
             }
         });
-        openPath(fileSystem.getCurrentFolder());
+        refresh();
     }
 
     private void newFolderDialog() {
@@ -287,8 +336,18 @@ public class Main extends Application {
 
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(name -> fileSystem.newFolder(name));
-        openPath(fileSystem.getCurrentFolder());
+        refresh();
 
+    }
+    private void renameDir(Directory dir) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Rename");
+        dialog.setHeaderText("Header text mlosh lzma bs 3agbny xD");
+        dialog.setContentText("New name:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(name -> fileSystem.rename(dir, name));
+        refresh();
     }
 
 }
