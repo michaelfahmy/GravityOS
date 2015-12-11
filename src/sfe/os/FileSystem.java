@@ -133,7 +133,7 @@ public class FileSystem {
     }
  
     void back() {
-        this.currentFolder = this.currentFolder.parent;
+        this.currentFolder = this.currentFolder.parent != null ? this.currentFolder.parent : this.root;
     }
  
     void copy(Directory toBeCopied) {

@@ -117,18 +117,15 @@ public class Main extends Application {
     }
 
     private void refresh() {
+        ContextMenu rightClickMenu4Tiles = new ContextMenu();
         TilePane tiles = new TilePane();
         tiles.setPrefColumns(8);
         tiles.setHgap(25);
         tiles.setVgap(30);
         tiles.setPadding(new Insets(20));
 
-
-        ContextMenu rightClickMenu = new ContextMenu();
-        tiles.setOnMouseClicked(event -> {
-            if(rightClickMenu.getItems().size() > 0) {
-                rightClickMenu.getItems().clear();
-            }
+        tiles.setOnMouseClicked(event -> { // Right click menu for tilePane.
+            if(rightClickMenu4Tiles.getItems().size() > 0) { rightClickMenu4Tiles.getItems().clear(); }
             MenuItem newFolderItem = new MenuItem("New Folder");
             MenuItem newFileItem = new MenuItem("New File");
             MenuItem pasteItem = new MenuItem("Paste");
@@ -136,21 +133,12 @@ public class Main extends Application {
             newFolderItem.setOnAction(event1 -> newFolderDialog());
             newFileItem.setOnAction(event1 ->  newFileDialog());
             pasteItem.setOnAction(event1 -> { fileSystem.paste(); refresh(); });
-            propertiesItem.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
-                @Override
-                public void handle(javafx.event.ActionEvent event) {
-
-                }
-            });
+            propertiesItem.setOnAction(event1 -> { /* Properties.*/ });
             SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
             SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
-            rightClickMenu.getItems().addAll(newFolderItem, newFileItem, separatorMenuItem1, pasteItem, separatorMenuItem2, propertiesItem);
-            if(event.getButton().equals(MouseButton.SECONDARY)) {
-                rightClickMenu.show(explorer, event.getScreenX(), event.getScreenY());
-
-            } else {
-                rightClickMenu.hide();
-            }
+            rightClickMenu4Tiles.getItems().addAll(newFolderItem, newFileItem, separatorMenuItem1, pasteItem, separatorMenuItem2, propertiesItem);
+            if(event.getButton().equals(MouseButton.SECONDARY)) { rightClickMenu4Tiles.show(explorer, event.getScreenX(), event.getScreenY()); }
+            else { rightClickMenu4Tiles.hide(); }
         });
         tiles.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
         populateTiles(tiles);
