@@ -49,12 +49,21 @@ public class FileSystem {
  
     private final Folder root;
     private Folder currentFolder;
+    private Directory selected = null;
     Directory toBePasted = null;
     String whichProcess = COPY_PROCESS;
  
     public FileSystem() {
         root = new Folder("root", "", null);
         currentFolder = root;
+    }
+
+    public void select(Directory selected) {
+        this.selected = selected;
+    }
+
+    public Directory getSelected() {
+        return selected;
     }
 
     public Folder getCurrentFolder() {
@@ -77,6 +86,15 @@ public class FileSystem {
         String path = this.currentFolder.path + "/" + name + ".mp3";
         File child = new File(name, path, this.currentFolder, "read-only", "mp3");
         this.currentFolder.children.add(child);
+    }
+
+    void  rename(Directory toBeRenamed, String name) {
+        for (int i = 0; i < this.currentFolder.children.size(); ++i) {
+            if (toBeRenamed == this.currentFolder.children.get(i)) {
+                this.currentFolder.children.get(i).name = name;
+                break;
+            }
+        }
     }
  
     void delete(Directory toBeDeleted) {
