@@ -69,7 +69,7 @@ public class FileSystem {
     public Folder getCurrentFolder() {
         return currentFolder;
     }
- 
+
     void newFolder(String name) {
         String path = this.currentFolder.path + "/" + name;
         Folder child = new Folder(name, path, this.currentFolder);
