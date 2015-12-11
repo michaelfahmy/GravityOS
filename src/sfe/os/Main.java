@@ -9,7 +9,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -123,31 +122,34 @@ public class Main extends Application {
         tiles.setHgap(25);
         tiles.setVgap(30);
         tiles.setPadding(new Insets(20));
-        tiles.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                final ContextMenu rightClickMenu = new ContextMenu();
-                if(event.getButton().equals(MouseButton.SECONDARY)) {
-                    MenuItem newFolderItem = new MenuItem("New Folder");
-                    MenuItem newFileItem = new MenuItem("New File");
-                    MenuItem pasteItem = new MenuItem("Paste");
-                    MenuItem propertiesItem = new MenuItem("Properties");
-                    newFolderItem.setOnAction(event1 -> newFolderDialog());
-                    newFileItem.setOnAction(event1 ->  newFileDialog());
-                    pasteItem.setOnAction(event1 -> { fileSystem.paste(); refresh(); });
-                    propertiesItem.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
-                        @Override
-                        public void handle(javafx.event.ActionEvent event) {
 
-                        }
-                    });
-                    SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
-                    SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
-                    rightClickMenu.getItems().addAll(newFolderItem, newFileItem, separatorMenuItem1, pasteItem, separatorMenuItem2, propertiesItem);
-                    rightClickMenu.show(explorer, 1500, 50);
-                }else {
-                    rightClickMenu.hide();
+
+        ContextMenu rightClickMenu = new ContextMenu();
+        tiles.setOnMouseClicked(event -> {
+            if(rightClickMenu.getItems().size() > 0) {
+                rightClickMenu.getItems().clear();
+            }
+            MenuItem newFolderItem = new MenuItem("New Folder");
+            MenuItem newFileItem = new MenuItem("New File");
+            MenuItem pasteItem = new MenuItem("Paste");
+            MenuItem propertiesItem = new MenuItem("Properties");
+            newFolderItem.setOnAction(event1 -> newFolderDialog());
+            newFileItem.setOnAction(event1 ->  newFileDialog());
+            pasteItem.setOnAction(event1 -> { fileSystem.paste(); refresh(); });
+            propertiesItem.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
+                @Override
+                public void handle(javafx.event.ActionEvent event) {
+
                 }
+            });
+            SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
+            SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
+            rightClickMenu.getItems().addAll(newFolderItem, newFileItem, separatorMenuItem1, pasteItem, separatorMenuItem2, propertiesItem);
+            if(event.getButton().equals(MouseButton.SECONDARY)) {
+                rightClickMenu.show(explorer, event.getScreenX(), event.getScreenY());
+
+            } else {
+                rightClickMenu.hide();
             }
         });
         tiles.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
