@@ -2,6 +2,7 @@ package sfe.os;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -9,10 +10,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.awt.event.ActionEvent;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -32,10 +35,8 @@ public class Main extends Application {
         this.stage.setTitle("Explorer");
         this.stage.setFullScreen(true);
         this.stage.setFullScreenExitHint("");
-
         fileSystem = new FileSystem();
         desktop();
-
         stage.show();
     }
 
@@ -86,30 +87,30 @@ public class Main extends Application {
 
         // populating ToolBar
         Button back = new Button();
-            back.setGraphic(new ImageView("res/icon-back.png"));
-            back.setOnAction(event -> {
-                if (fileSystem.getCurrentFolder().name.equals("root")) {
-                    desktop();
-                } else {
-                    fileSystem.back();
-                    openPath(fileSystem.getCurrentFolder());
-                }
-            });
+        back.setGraphic(new ImageView("res/icon-back.png"));
+        back.setOnAction(event -> {
+            if (fileSystem.getCurrentFolder().name.equals("root")) {
+                desktop();
+            } else {
+                fileSystem.back();
+                openPath(fileSystem.getCurrentFolder());
+            }
+        });
         Button newFile = new Button();
-            newFile.setGraphic(new ImageView("res/newFile.png"));
-            newFile.setOnAction(event -> newFileDialog());
+        newFile.setGraphic(new ImageView("res/newFile.png"));
+        newFile.setOnAction(event -> newFileDialog());
         Button newFolder = new Button();
-            newFolder.setGraphic(new ImageView("res/newFolder.png"));
-            newFolder.setOnAction(event -> newFolderDialog());
+        newFolder.setGraphic(new ImageView("res/newFolder.png"));
+        newFolder.setOnAction(event -> newFolderDialog());
         Button copyBtn = new Button();
-            copyBtn.setGraphic(new ImageView("res/copy.png"));
+        copyBtn.setGraphic(new ImageView("res/copy.png"));
         Button cutBtn = new Button();
-            cutBtn.setGraphic(new ImageView("res/cut.png"));
+        cutBtn.setGraphic(new ImageView("res/cut.png"));
         Button pasteBtn = new Button();
-            pasteBtn.setGraphic(new ImageView("res/paste.png"));
-            pasteBtn.setOnAction(event -> { fileSystem.paste(); openPath(fileSystem.getCurrentFolder()); });
+        pasteBtn.setGraphic(new ImageView("res/paste.png"));
+        pasteBtn.setOnAction(event -> { fileSystem.paste(); openPath(fileSystem.getCurrentFolder()); });
         Button delete = new Button();
-            delete.setGraphic(new ImageView("res/delete.png"));
+        delete.setGraphic(new ImageView("res/delete.png"));
 
         toolBar.getItems().addAll(back, newFile, newFolder, copyBtn, cutBtn, pasteBtn, delete);
 
@@ -124,6 +125,33 @@ public class Main extends Application {
         tiles.setHgap(25);
         tiles.setVgap(30);
         tiles.setPadding(new Insets(15));
+        tiles.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                final ContextMenu rightClickMenu = new ContextMenu();
+                if(event.getButton().equals(MouseButton.SECONDARY)) {
+                    MenuItem newFolderItem = new MenuItem("New Folder");
+                    MenuItem newFileItem = new MenuItem("New File");
+                    MenuItem pasteItem = new MenuItem("Paste");
+                    MenuItem propertiesItem = new MenuItem("Properties");
+                    newFolderItem.setOnAction(event1 -> newFolderDialog());
+                    newFileItem.setOnAction(event1 ->  newFileDialog());
+                    pasteItem.setOnAction(event1 -> { fileSystem.paste(); openPath(fileSystem.getCurrentFolder()); });
+                    propertiesItem.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
+                        @Override
+                        public void handle(javafx.event.ActionEvent event) {
+
+                        }
+                    });
+                    SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
+                    SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
+                    rightClickMenu.getItems().addAll(newFolderItem, newFileItem, separatorMenuItem1, pasteItem, separatorMenuItem2, propertiesItem);
+                    rightClickMenu.show(explorer, 1500, 50);
+                }else {
+                    rightClickMenu.hide();
+                }
+            }
+        });
 
         LinkedList<Directory> dirs = currFolder.getChildren();
 
