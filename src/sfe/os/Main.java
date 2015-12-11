@@ -9,7 +9,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -118,37 +117,28 @@ public class Main extends Application {
     }
 
     private void refresh() {
+        ContextMenu rightClickMenu4Tiles = new ContextMenu();
         TilePane tiles = new TilePane();
         tiles.setPrefColumns(8);
         tiles.setHgap(25);
         tiles.setVgap(30);
         tiles.setPadding(new Insets(20));
-        tiles.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                final ContextMenu rightClickMenu = new ContextMenu();
-                if(event.getButton().equals(MouseButton.SECONDARY)) {
-                    MenuItem newFolderItem = new MenuItem("New Folder");
-                    MenuItem newFileItem = new MenuItem("New File");
-                    MenuItem pasteItem = new MenuItem("Paste");
-                    MenuItem propertiesItem = new MenuItem("Properties");
-                    newFolderItem.setOnAction(event1 -> newFolderDialog());
-                    newFileItem.setOnAction(event1 ->  newFileDialog());
-                    pasteItem.setOnAction(event1 -> { fileSystem.paste(); refresh(); });
-                    propertiesItem.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
-                        @Override
-                        public void handle(javafx.event.ActionEvent event) {
 
-                        }
-                    });
-                    SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
-                    SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
-                    rightClickMenu.getItems().addAll(newFolderItem, newFileItem, separatorMenuItem1, pasteItem, separatorMenuItem2, propertiesItem);
-                    rightClickMenu.show(explorer, 1500, 50);
-                }else {
-                    rightClickMenu.hide();
-                }
-            }
+        tiles.setOnMouseClicked(event -> { // Right click menu for tilePane.
+            if(rightClickMenu4Tiles.getItems().size() > 0) { rightClickMenu4Tiles.getItems().clear(); }
+            MenuItem newFolderItem = new MenuItem("New Folder");
+            MenuItem newFileItem = new MenuItem("New File");
+            MenuItem pasteItem = new MenuItem("Paste");
+            MenuItem propertiesItem = new MenuItem("Properties");
+            newFolderItem.setOnAction(event1 -> newFolderDialog());
+            newFileItem.setOnAction(event1 ->  newFileDialog());
+            pasteItem.setOnAction(event1 -> { fileSystem.paste(); refresh(); });
+            propertiesItem.setOnAction(event1 -> { /* Properties.*/ });
+            SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
+            SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
+            rightClickMenu4Tiles.getItems().addAll(newFolderItem, newFileItem, separatorMenuItem1, pasteItem, separatorMenuItem2, propertiesItem);
+            if(event.getButton().equals(MouseButton.SECONDARY)) { rightClickMenu4Tiles.show(explorer, event.getScreenX(), event.getScreenY()); }
+            else { rightClickMenu4Tiles.hide(); }
         });
         tiles.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
         populateTiles(tiles);
