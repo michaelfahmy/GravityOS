@@ -1,5 +1,10 @@
 package sfe.os;
 
+import apps.ImageViewer;
+import apps.JavaFXMediaPlayer;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
 import java.util.LinkedList;
 
 
@@ -101,7 +106,7 @@ public class FileSystem {
         }
     }
  
-    void open(Directory toBeOpened) {
+    void open(Directory toBeOpened, Stage stage) {
         for (int i = 0; i < this.currentFolder.children.size(); ++i) {
             if (toBeOpened == this.currentFolder.children.get(i)) {
                 if (toBeOpened instanceof Folder) {
@@ -113,12 +118,15 @@ public class FileSystem {
                             break;
                         case "jpg":
                             System.out.println("Opening image viewer");
+                            new ImageViewer(new FileChooser().showOpenDialog(null).toURI().toString());
                             break;
                         case "mp3":
                             System.out.println("Opening music player");
+                            new JavaFXMediaPlayer(new FileChooser().showOpenDialog(null).toURI().toString());
                             break;
                         case "mp4":
                             System.out.println("Opening video player");
+                            new JavaFXMediaPlayer(new FileChooser().showOpenDialog(null).toURI().toString());
                             break;
                         case "pdf":
                             System.out.println("Opening pdf viewer");

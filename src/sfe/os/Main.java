@@ -1,5 +1,6 @@
 package sfe.os;
 
+import apps.JavaFXMediaPlayer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -146,7 +147,7 @@ public class Main extends Application {
                         fileSystem.select(dir);
                     }
                     if(event.getClickCount() == 2) {
-                        fileSystem.open(dir);
+                        fileSystem.open(dir, stage);
                         if (dir instanceof Folder)
                             refresh();
                     }
@@ -218,7 +219,7 @@ public class Main extends Application {
         ContextMenu rightClickMenu = new ContextMenu();
         MenuItem openItem = new MenuItem("Open");
         openItem.setOnAction(e -> {
-            fileSystem.open(dir);
+            fileSystem.open(dir, stage);
             if (dir instanceof Folder)
                 refresh();
         });
