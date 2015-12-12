@@ -122,11 +122,11 @@ public class FileSystem {
                             break;
                         case "mp3":
                             System.out.println("Opening music player");
-                            JavaFXMediaPlayer player = new JavaFXMediaPlayer();
-                            player.start(stage);
+                            new JavaFXMediaPlayer(new FileChooser().showOpenDialog(null).toURI().toString());
                             break;
                         case "mp4":
                             System.out.println("Opening video player");
+                            new JavaFXMediaPlayer(new FileChooser().showOpenDialog(null).toURI().toString());
                             break;
                         case "pdf":
                             System.out.println("Opening pdf viewer");
