@@ -1,6 +1,8 @@
 package sfe.os;
 
+import apps.ImageViewer;
 import apps.JavaFXMediaPlayer;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.util.LinkedList;
@@ -116,11 +118,12 @@ public class FileSystem {
                             break;
                         case "jpg":
                             System.out.println("Opening image viewer");
+                            new ImageViewer(new FileChooser().showOpenDialog(null).toURI().toString());
                             break;
                         case "mp3":
+                            System.out.println("Opening music player");
                             JavaFXMediaPlayer player = new JavaFXMediaPlayer();
                             player.start(stage);
-                            System.out.println("Opening music player");
                             break;
                         case "mp4":
                             System.out.println("Opening video player");
