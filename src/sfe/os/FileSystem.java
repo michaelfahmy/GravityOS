@@ -5,10 +5,12 @@ import apps.JavaFXMediaPlayer;
 import apps.WebBrowser;
 import javafx.stage.FileChooser;
 
+import java.io.*;
 import java.util.LinkedList;
+import java.util.Objects;
 
 
-class Directory {
+class Directory implements Serializable{
 
     String name, path;
     Folder parent;
@@ -51,15 +53,15 @@ public class FileSystem {
     
     private static final String COPY_PROCESS = "copy";
     private static final String CUT_PROCESS = "cut";
- 
-    private final Folder root;
+    private Folder root;
     private Folder currentFolder;
     private Directory selected = null;
     Directory toBePasted = null;
     String whichProcess = COPY_PROCESS;
- 
+
     public FileSystem() {
         root = new Folder("root", "", null);
+        root = retrieve();
         currentFolder = root;
     }
 
@@ -86,7 +88,6 @@ public class FileSystem {
         File child = new File(name, ext, path, this.currentFolder, permission);
         this.currentFolder.children.add(child);
     }
-
 
     void  rename(Directory toBeRenamed, String name) {
         for (int i = 0; i < this.currentFolder.children.size(); ++i) {
@@ -177,11 +178,47 @@ public class FileSystem {
         toBePasted.path = this.currentFolder.path + "/" + toBePasted.name;
         this.currentFolder.children.add(toBePasted);
     }
- 
+
+    void store() {
+        String address = "data.ser";
+        FileOutputStream fileOutput = null;
+        try {
+            fileOutput = new FileOutputStream(address);
+            ObjectOutputStream fileSystemData = new ObjectOutputStream(fileOutput);
+            fileSystemData.writeObject(root);
+            fileOutput.close();
+            fileSystemData.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    Folder retrieve() {
+        String address = "data.ser";
+        FileInputStream fileInput = null;
+        ObjectInputStream fileSystemData = null;
+        try {
+            fileInput = new FileInputStream(address);
+            //System.out.println(fileInput.read());
+            fileSystemData = new ObjectInputStream(fileInput);
+            return (Folder) fileSystemData.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }finally{
+            try {
+                fileInput.close();
+                fileSystemData.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
     void printAll() {
         printAll(this.root, 0);
     }
- 
+
     void printAll(Directory current, int cnt) {
         if (current == null) {
             return;
