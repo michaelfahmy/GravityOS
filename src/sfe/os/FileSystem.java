@@ -187,19 +187,16 @@ public class FileSystem {
             fileSystemData.writeObject(root);
             fileSystemData.close();
         } catch (IOException e) {
-//            e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
     void retrieve() {
         String address = "data.txt";
-        FileInputStream fileInput;
         ObjectInputStream fileSystemData;
         try {
-            fileInput = new FileInputStream(address);
-            fileSystemData = new ObjectInputStream(fileInput);
+            fileSystemData = new ObjectInputStream(new FileInputStream(address));
             Folder tmp = (Folder) fileSystemData.readObject();
-            fileInput.close();
             fileSystemData.close();
             this.root = tmp;
             this.currentFolder = tmp;
