@@ -201,8 +201,7 @@ public class FileSystem {
             this.root = tmp;
             this.currentFolder = tmp;
         } catch (IOException | ClassNotFoundException e) {
-            this.root = new Folder("root", "", null);
-            this.currentFolder = root;
+            // Do nothing...
         }
     }
 
