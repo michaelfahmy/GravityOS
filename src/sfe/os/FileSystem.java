@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 
-class Directory implements Serializable{
+class Directory implements Serializable {
 
     String name, path;
     Folder parent;
@@ -61,8 +61,8 @@ public class FileSystem {
 
     public FileSystem() {
         root = new Folder("root", "", null);
-        root = retrieve();
         currentFolder = root;
+        this.retrieve();
     }
 
     public void select(Directory selected) {
@@ -89,7 +89,7 @@ public class FileSystem {
         this.currentFolder.children.add(child);
     }
 
-    void  rename(Directory toBeRenamed, String name) {
+    void rename(Directory toBeRenamed, String name) {
         for (int i = 0; i < this.currentFolder.children.size(); ++i) {
             if (toBeRenamed == this.currentFolder.children.get(i)) {
                 this.currentFolder.children.get(i).name = name;
@@ -180,39 +180,35 @@ public class FileSystem {
     }
 
     void store() {
-        String address = "data.ser";
-        FileOutputStream fileOutput = null;
+        String address = "data.txt";
+        ObjectOutputStream fileSystemData;
         try {
-            fileOutput = new FileOutputStream(address);
-            ObjectOutputStream fileSystemData = new ObjectOutputStream(fileOutput);
+            fileSystemData = new ObjectOutputStream(new FileOutputStream(address));
             fileSystemData.writeObject(root);
-            fileOutput.close();
             fileSystemData.close();
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 
-    Folder retrieve() {
-        String address = "data.ser";
-        FileInputStream fileInput = null;
-        ObjectInputStream fileSystemData = null;
+    void retrieve() {
+        String address = "data.txt";
+        FileInputStream fileInput;
+        ObjectInputStream fileSystemData;
         try {
             fileInput = new FileInputStream(address);
-            //System.out.println(fileInput.read());
             fileSystemData = new ObjectInputStream(fileInput);
-            return (Folder) fileSystemData.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+            Folder tmp = (Folder) fileSystemData.readObject();
+            fileInput.close();
+            fileSystemData.close();
+            this.root = tmp;
+            this.currentFolder = tmp;
+        } catch (IOException e) {
+            this.root = null;
+            this.currentFolder = null;
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        }finally{
-            try {
-                fileInput.close();
-                fileSystemData.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
-        return null;
     }
 
     void printAll() {
