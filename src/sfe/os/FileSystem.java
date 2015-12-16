@@ -48,9 +48,9 @@ class File extends Directory {
         this.extension = extension;
     }
 }
- 
+
 public class FileSystem {
-    
+
     private static final String COPY_PROCESS = "copy";
     private static final String CUT_PROCESS = "cut";
     private Folder root;
@@ -82,7 +82,7 @@ public class FileSystem {
         Folder child = new Folder(name, path, this.currentFolder);
         this.currentFolder.children.add(child);
     }
- 
+
     void newFile(String name, String ext, String permission) {
         String path = this.currentFolder.path + "/" + name + ext;
         File child = new File(name, ext, path, this.currentFolder, permission);
@@ -97,7 +97,7 @@ public class FileSystem {
             }
         }
     }
- 
+
     void delete(Directory toBeDeleted) {
         for (int i = 0; i < this.currentFolder.children.size(); ++i) {
             if (toBeDeleted == this.currentFolder.children.get(i)) {
@@ -106,7 +106,7 @@ public class FileSystem {
             }
         }
     }
- 
+
     void open(Directory toBeOpened) {
         for (int i = 0; i < this.currentFolder.children.size(); ++i) {
             if (toBeOpened == this.currentFolder.children.get(i)) {
@@ -141,11 +141,11 @@ public class FileSystem {
             }
         }
     }
- 
+
     void back() {
         this.currentFolder = this.currentFolder.parent != null ? this.currentFolder.parent : this.root;
     }
- 
+
     void copy(Directory toBeCopied) {
         for (int i = 0; i < this.currentFolder.children.size(); ++i) {
             if (toBeCopied == this.currentFolder.children.get(i)) {
@@ -155,7 +155,7 @@ public class FileSystem {
             }
         }
     }
- 
+
     void cut(Directory toBeCutted) {
         for (int i = 0; i < this.currentFolder.children.size(); ++i) {
             if (toBeCutted == this.currentFolder.children.get(i)) {
@@ -165,7 +165,7 @@ public class FileSystem {
             }
         }
     }
- 
+
     void paste() {
         if (this.whichProcess.equals(CUT_PROCESS)) {
             for (int i = 0; i < this.toBePasted.parent.children.size(); i++) {
@@ -200,11 +200,9 @@ public class FileSystem {
             fileSystemData.close();
             this.root = tmp;
             this.currentFolder = tmp;
-        } catch (IOException e) {
-            this.root = null;
-            this.currentFolder = null;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (IOException | ClassNotFoundException e) {
+            this.root = new Folder("root", "", null);
+            this.currentFolder = root;
         }
     }
 
