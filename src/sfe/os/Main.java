@@ -68,7 +68,7 @@ public class Main extends Application {
             MenuItem newFileMenu = new MenuItem("New File");
             newFileMenu.setOnAction(event -> newFileDialog());
             MenuItem close = new MenuItem("Close");
-            close.setOnAction(event -> System.exit(0));
+            close.setOnAction(event ->  { fileSystem.store(); System.exit(0); });
             fileMenu.getItems().addAll(newFileMenu, close);
         }
         Menu editMenu = new Menu("Edit");
