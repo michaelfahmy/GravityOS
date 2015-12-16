@@ -93,19 +93,25 @@ public class Main extends Application {
             }
         });
         Button newFile = new Button();
+        newFile.setTooltip(new Tooltip("New File"));
         newFile.setGraphic(new ImageView("res/newFile.png"));
         newFile.setOnAction(event -> newFileDialog());
         Button newFolder = new Button();
+        newFolder.setTooltip(new Tooltip("New Folder"));
         newFolder.setGraphic(new ImageView("res/newFolder.png"));
         newFolder.setOnAction(event -> newFolderDialog());
         Button copyBtn = new Button();
+        copyBtn.setTooltip(new Tooltip("Copy"));
         copyBtn.setGraphic(new ImageView("res/copy.png"));
         Button cutBtn = new Button();
+        cutBtn.setTooltip(new Tooltip("Cut"));
         cutBtn.setGraphic(new ImageView("res/cut.png"));
         Button pasteBtn = new Button();
+        pasteBtn.setTooltip(new Tooltip("Paste"));
         pasteBtn.setGraphic(new ImageView("res/paste.png"));
         pasteBtn.setOnAction(event -> { fileSystem.paste(); refresh(); });
         Button delete = new Button();
+        delete.setTooltip(new Tooltip("Delete"));
         delete.setGraphic(new ImageView("res/delete.png"));
 
         toolBar.getItems().addAll(back, newFile, newFolder, copyBtn, cutBtn, pasteBtn, delete);
@@ -326,7 +332,6 @@ public class Main extends Application {
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(name -> fileSystem.newFolder(name));
         refresh();
-
     }
     private void renameDir(Directory dir) {
         TextInputDialog dialog = new TextInputDialog();
