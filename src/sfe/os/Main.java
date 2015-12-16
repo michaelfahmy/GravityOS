@@ -17,7 +17,7 @@ import javafx.util.Pair;
 import java.util.Optional;
 
 public class Main extends Application {
-    ContextMenu rightClickMenu4Tiles = new ContextMenu();
+    ContextMenu rightClickMenu4Tiles = null;
     private Stage stage;
     private BorderPane explorer;
     FileSystem fileSystem;
@@ -170,8 +170,10 @@ public class Main extends Application {
             tiles.getChildren().add(view[i]);
         }
     }
+
     private void TilePaneRightClickContextMenu(MouseEvent event) {
-        if(rightClickMenu4Tiles.getItems().size() > 0) { rightClickMenu4Tiles.getItems().clear(); }
+        if(rightClickMenu4Tiles == null) { rightClickMenu4Tiles = new ContextMenu(); }
+        else if(rightClickMenu4Tiles.getItems().size() > 0) {rightClickMenu4Tiles.getItems().clear();}
         MenuItem newFolderItem = new MenuItem("New Folder");
         MenuItem newFileItem = new MenuItem("New File");
         MenuItem pasteItem = new MenuItem("Paste");
@@ -183,10 +185,9 @@ public class Main extends Application {
         SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
         SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
         rightClickMenu4Tiles.getItems().addAll(newFolderItem, newFileItem, separatorMenuItem1, pasteItem, separatorMenuItem2, propertiesItem);
-        if(event.getButton().equals(MouseButton.SECONDARY)) { rightClickMenu4Tiles.show(explorer, event.getScreenX(), event.getScreenY()); }
+        if(event.getButton().equals(MouseButton.SECONDARY) && !event.getTarget().toString().contains("Label")) { rightClickMenu4Tiles.show(explorer, event.getScreenX(), event.getScreenY());}
         else { rightClickMenu4Tiles.hide(); }
     }
-
 
     private void setIcon(Directory dir, Label view) {
         if (dir instanceof Folder) {
@@ -220,7 +221,6 @@ public class Main extends Application {
     }
 
     private ContextMenu dirRightClickMenu(Directory dir) {
-
         ContextMenu rightClickMenu = new ContextMenu();
         MenuItem openItem = new MenuItem("Open");
         openItem.setOnAction(e -> {
@@ -336,6 +336,7 @@ public class Main extends Application {
         result.ifPresent(name -> fileSystem.newFolder(name));
         refresh();
     }
+
     private void renameDir(Directory dir) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Rename");
