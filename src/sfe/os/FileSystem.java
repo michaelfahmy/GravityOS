@@ -2,8 +2,8 @@ package sfe.os;
 
 import apps.ImageViewer;
 import apps.JavaFXMediaPlayer;
+import apps.WebBrowser;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 import java.util.LinkedList;
 
@@ -106,7 +106,7 @@ public class FileSystem {
         }
     }
  
-    void open(Directory toBeOpened, Stage stage) {
+    void open(Directory toBeOpened) {
         for (int i = 0; i < this.currentFolder.children.size(); ++i) {
             if (toBeOpened == this.currentFolder.children.get(i)) {
                 if (toBeOpened instanceof Folder) {
@@ -133,6 +133,7 @@ public class FileSystem {
                             break;
                         case "html":
                             System.out.println("Opening browser");
+                            new WebBrowser();
                             break;
                     }
                 }
