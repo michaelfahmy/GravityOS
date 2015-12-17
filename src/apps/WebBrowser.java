@@ -59,10 +59,14 @@ public class WebBrowser {
         public WebViewPane() {
             browser = new WebView();
             engine = browser.getEngine();
-            if (fileUrl == null)
+            if (fileUrl == null) {
+                url.setText("http://www.google.com");
                 engine.load("http://www.google.com");
-            else
+            }
+            else {
+                url.setText(fileUrl);
                 engine.load(fileUrl);
+            }
             history = browser.getEngine().getHistory();
 
             backButton = new Button(null, new ImageView(new Image("res/browserIcons/back.png")));

@@ -316,8 +316,8 @@ public class Explorer {
                         fileSystem.newFile(name, "pdf", "r", fileUrl);
                         break;
                     case "Website":
-                        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("HTML file", "html", "htm"));
-                        fileUrl = chooser.showOpenDialog(null).toURI().toString();
+//                        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("HTML file", "html", "htm"));
+//                        fileUrl = chooser.showOpenDialog(null).toURI().toString();
                         fileSystem.newFile(name, "html", "r", fileUrl);
                         break;
                 }
