@@ -10,7 +10,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -308,7 +307,7 @@ public class Explorer {
                     ext = "html";
                     break;
             }
-            file = new File(name,ext,fileSystem.getCurrentFolder().getPath() + "/"+name+"."+ext,fileSystem.getCurrentFolder(),permission);
+            file = new File(name, ext, fileSystem.getCurrentFolder().getPath() + "/" + name + "." + ext, fileSystem.getCurrentFolder() ,permission);
             new sfe.os.FileChooser(file);
             fileSystem.getCurrentFolder().children.add(file);
         });
