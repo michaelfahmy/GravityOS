@@ -1,8 +1,5 @@
 package apps;
 
-/**
- * Created by Michael Fahmy on 12/12/2015.
- */
 
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Pos;

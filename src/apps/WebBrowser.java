@@ -14,26 +14,36 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-/**
- * Created by michael on 12/12/15.
- */
-
 
 public class WebBrowser {
 
+    private String fileUrl = null;
+
     public WebBrowser() {
+       init();
+    }
+
+    public WebBrowser(String fileUrl) {
+        this.fileUrl = fileUrl;
+        init();
+    }
+
+    private void init() {
         Stage stage = new Stage();
         stage.setTitle("Browser");
         stage.setScene(new Scene(new WebViewPane()));
         stage.show();
     }
+
 
     public class WebViewPane extends Pane {
         WebView browser;
@@ -49,7 +59,14 @@ public class WebBrowser {
         public WebViewPane() {
             browser = new WebView();
             engine = browser.getEngine();
-            engine.load("http://www.google.com");
+            if (fileUrl == null) {
+                url.setText("http://www.google.com");
+                engine.load("http://www.google.com");
+            }
+            else {
+                url.setText(fileUrl);
+                engine.load(fileUrl);
+            }
             history = browser.getEngine().getHistory();
 
             backButton = new Button(null, new ImageView(new Image("res/browserIcons/back.png")));
