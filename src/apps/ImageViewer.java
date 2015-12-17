@@ -1,8 +1,5 @@
 package apps;
 
-/**
- * Created by michael on 12/12/15.
- */
 
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;

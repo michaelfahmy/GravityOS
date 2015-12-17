@@ -1,13 +1,10 @@
 package sfe.os;
 
 import apps.ImageViewer;
-import apps.JavaFXMediaPlayer;
 import apps.WebBrowser;
-import javafx.stage.FileChooser;
 
 import java.io.*;
 import java.util.LinkedList;
-import java.util.Objects;
 
 
 class Directory implements Serializable {
@@ -41,11 +38,13 @@ class File extends Directory {
 
     String permission;
     String extension;
+    String fileUrl;
 
-    public File(String name, String extension, String path, Folder parent, String permission) {
+    public File(String name, String extension, String path, Folder parent, String permission, String fileUrl) {
         super(name + "." + extension, path, parent);
         this.permission = permission;
         this.extension = extension;
+        this.fileUrl = fileUrl;
     }
 }
 
@@ -83,9 +82,9 @@ public class FileSystem {
         this.currentFolder.children.add(child);
     }
 
-    void newFile(String name, String ext, String permission) {
+    void newFile(String name, String ext, String permission, String fileUrl) {
         String path = this.currentFolder.path + "/" + name + ext;
-        File child = new File(name, ext, path, this.currentFolder, permission);
+        File child = new File(name, ext, path, this.currentFolder, permission, fileUrl);
         this.currentFolder.children.add(child);
     }
 
@@ -115,26 +114,27 @@ public class FileSystem {
                 } else {
                     switch (((File) toBeOpened).extension) {
                         case "txt":
-                            System.out.println("Opening notepad");
+                            System.out.println("Opening text editor");
                             break;
                         case "jpg":
                             System.out.println("Opening image viewer");
-                            new ImageViewer(new FileChooser().showOpenDialog(null).toURI().toString());
+                            new ImageViewer(((File) toBeOpened).fileUrl);
                             break;
                         case "mp3":
                             System.out.println("Opening music player");
-                            new JavaFXMediaPlayer(new FileChooser().showOpenDialog(null).toURI().toString());
+//                            new JavaFXMediaPlayer(((File) toBeOpened).fileUrl);
                             break;
                         case "mp4":
                             System.out.println("Opening video player");
-                            new JavaFXMediaPlayer(new FileChooser().showOpenDialog(null).toURI().toString());
+//                            new JavaFXMediaPlayer(((File) toBeOpened).fileUrl);
                             break;
                         case "pdf":
                             System.out.println("Opening pdf viewer");
+//                            new PDFViewer(((File) toBeOpened).fileUrl);
                             break;
                         case "html":
                             System.out.println("Opening browser");
-                            new WebBrowser();
+                            new WebBrowser(((File) toBeOpened).fileUrl);
                             break;
                     }
                 }
@@ -187,7 +187,7 @@ public class FileSystem {
             fileSystemData.writeObject(root);
             fileSystemData.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("store(): " + e.toString());
         }
     }
 
@@ -201,7 +201,7 @@ public class FileSystem {
             this.root = tmp;
             this.currentFolder = tmp;
         } catch (IOException | ClassNotFoundException e) {
-            // Do nothing...
+            System.out.println("retrieve(): " + e.toString());
         }
     }
 
