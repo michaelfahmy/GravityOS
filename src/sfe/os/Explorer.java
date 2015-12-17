@@ -152,7 +152,7 @@ public class Explorer {
                 currView.setScaleX(1);
                 currView.setScaleY(1);
             });
-            tiles.getChildren().add(view[i]);
+            if(!dir.isHidden()) { tiles.getChildren().add(view[i]); }
         }
     }
 
@@ -284,46 +284,33 @@ public class Explorer {
         Platform.runLater(textField::requestFocus);
         Optional<Pair<String, String>> result = dialog.showAndWait();
         result.ifPresent(pair -> {
-            String name = pair.getKey().trim();
+            String name = pair.getKey();
             String type = pair.getValue();
-
-            FileChooser chooser = new FileChooser();
-            chooser.setInitialDirectory(new java.io.File("src/res/files"));
-            String fileUrl = null;
-            try {
-                switch (type) {
-                    case "Text":
-                        fileSystem.newFile(name, "txt", "r/w", null);
-                        break;
-                    case "Image":
-                        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("JPG Image", "jpg"));
-                        fileUrl = chooser.showOpenDialog(null).toURI().toString();
-                        fileSystem.newFile(name, "jpg", "r", fileUrl);
-                        break;
-                    case "Sound":
-                        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("MP3 file", "mp3"));
-                        fileUrl = chooser.showOpenDialog(null).toURI().toString();
-                        fileSystem.newFile(name, "mp3", "r", fileUrl);
-                        break;
-                    case "Video":
-                        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("MP4 file", "mp4"));
-                        fileUrl = chooser.showOpenDialog(null).toURI().toString();
-                        fileSystem.newFile(name, "mp4", "r", fileUrl);
-                        break;
-                    case "PDF":
-                        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("PDF file", "pdf"));
-                        fileUrl = chooser.showOpenDialog(null).toURI().toString();
-                        fileSystem.newFile(name, "pdf", "r", fileUrl);
-                        break;
-                    case "Website":
-//                        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("HTML file", "html", "htm"));
-//                        fileUrl = chooser.showOpenDialog(null).toURI().toString();
-                        fileSystem.newFile(name, "html", "r", fileUrl);
-                        break;
-                }
-            } catch (Exception e) {
-                System.out.println("Can't create file -> fileUrl = " + fileUrl);
+            String permission = "r/w", ext = "";
+            File file;
+            switch (type) {
+                case "Text":
+                    ext = "txt";
+                    break;
+                case "Image":
+                    ext = "jpg";
+                    break;
+                case "Sound":
+                    ext = "mp3";
+                    break;
+                case "Video":
+                    ext = "mp4";
+                    break;
+                case "PDF":
+                    ext = "pdf";
+                    break;
+                case "Website":
+                    ext = "html";
+                    break;
             }
+            file = new File(name,ext,fileSystem.getCurrentFolder().getPath() + "/"+name+"."+ext,fileSystem.getCurrentFolder(),permission);
+            new sfe.os.FileChooser(file);
+            fileSystem.getCurrentFolder().children.add(file);
         });
         refresh();
     }

@@ -2,22 +2,34 @@ package sfe.os;
 
 import apps.ImageViewer;
 import apps.WebBrowser;
-
 import java.io.*;
 import java.util.LinkedList;
 
 
 class Directory implements Serializable {
 
-    String name, path;
+    String name, path, realPath;
     Folder parent;
+    boolean isHidden = false;
 
     public Directory(String name, String path, Folder parent) {
         this.name = name;
         this.path = path;
         this.parent = parent;
     }
-
+    boolean isHidden() {
+        return isHidden;
+    }
+    void setHidden() {
+        isHidden = true;
+    }
+    public void setRealPath(String realPath) { this.realPath = realPath; }
+    public String getRealPath() {
+        return this.realPath;
+    }
+    public String getPath() {
+        return this.path;
+    }
 }
 
 class Folder extends Directory {
@@ -40,7 +52,7 @@ class File extends Directory {
     String extension;
     String fileUrl;
 
-    public File(String name, String extension, String path, Folder parent, String permission, String fileUrl) {
+    public File(String name, String extension, String path, Folder parent, String permission) {
         super(name + "." + extension, path, parent);
         this.permission = permission;
         this.extension = extension;
@@ -52,14 +64,17 @@ public class FileSystem {
 
     private static final String COPY_PROCESS = "copy";
     private static final String CUT_PROCESS = "cut";
-    private Folder root;
-    private Folder currentFolder;
+    private Folder root, currentFolder, resFolder;
     private Directory selected = null;
     Directory toBePasted = null;
     String whichProcess = COPY_PROCESS;
 
     public FileSystem() {
         root = new Folder("root", "", null);
+        resFolder = new Folder("resFolder", "/resFolder", root);
+        resFolder.setHidden();
+        root.children.add(resFolder);
+        this.seeds(resFolder, "src/res");
         currentFolder = root;
         this.retrieve();
     }
@@ -81,10 +96,9 @@ public class FileSystem {
         Folder child = new Folder(name, path, this.currentFolder);
         this.currentFolder.children.add(child);
     }
-
-    void newFile(String name, String ext, String permission, String fileUrl) {
+    void newFile(String name, String ext, String permission) {
         String path = this.currentFolder.path + "/" + name + ext;
-        File child = new File(name, ext, path, this.currentFolder, permission, fileUrl);
+        File child = new File(name, ext, path, this.currentFolder, permission);
         this.currentFolder.children.add(child);
     }
 
@@ -118,7 +132,7 @@ public class FileSystem {
                             break;
                         case "jpg":
                             System.out.println("Opening image viewer");
-                            new ImageViewer(((File) toBeOpened).fileUrl);
+                            new ImageViewer(toBeOpened.getRealPath());
                             break;
                         case "mp3":
                             System.out.println("Opening music player");
@@ -202,6 +216,27 @@ public class FileSystem {
             this.currentFolder = tmp;
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("retrieve(): " + e.toString());
+        }
+    }
+
+    void seeds(Folder currPos, String path) {
+        String name, extension, permision = "";
+        java.io.File resDir = (new java.io.File(path));
+        for(java.io.File currFile: resDir.listFiles()) {
+            if(currFile.isDirectory()) {
+                name = currFile.getName();
+                Folder folder = new Folder(name, currPos.path + "/" + name, currPos);
+                folder.setRealPath(currFile.getPath());
+                currPos.children.add(folder);
+                seeds((Folder) folder, currFile.getPath());
+            }else {
+                name = currFile.getName().substring(0, currFile.getName().indexOf('.'));
+                extension = currFile.getName().substring(currFile.getName().indexOf('.') + 1);
+                permision = extension.equals(".html") ? "r" : "r/w";
+                File fle = new File(name, extension, currPos.path + "/" + name + "." + extension,currPos, permision);
+                fle.setRealPath(currFile.toURI().toString());
+                currPos.children.add(fle);
+            }
         }
     }
 
