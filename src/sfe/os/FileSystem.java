@@ -25,15 +25,7 @@ class Directory implements Serializable {
     void setHidden() {
         isHidden = true;
     }
-    void setUnHidden() {
-        isHidden = false;
-    }
-    public void setRealPath(String realPath) {
-        this.realPath = realPath;
-    }
-    public String getName() {
-        return this.name;
-    }
+    public void setRealPath(String realPath) { this.realPath = realPath; }
     public String getRealPath() {
         return this.realPath;
     }

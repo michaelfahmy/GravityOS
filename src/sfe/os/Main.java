@@ -86,8 +86,10 @@ public class Main extends Application {
         Button back = new Button();
         back.setGraphic(new ImageView("res/icon-back.png"));
         back.setOnAction(event -> {
-            if (fileSystem.getCurrentFolder().name.equals("root")) {
+            if (fileSystem.getCurrentFolder() == null || fileSystem.getCurrentFolder().parent == null) {
+                stage.hide(); // To handel the result exception...
                 desktop();
+                stage.show();
             } else {
                 fileSystem.back();
                 refresh();

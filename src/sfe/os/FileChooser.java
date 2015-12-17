@@ -72,8 +72,8 @@ public class FileChooser {
                 currView.setScaleX(1);
                 currView.setScaleY(1);
             });
-            if(dir.parent.getName().equals("root") && dir.isHidden) { tiles.getChildren().add(view[i]); }
-            else { tiles.getChildren().add(view[i]); }
+            if(dir.parent == null && dir.isHidden) { tiles.getChildren().add(view[i]); }
+            else if (dir.parent != null){ tiles.getChildren().add(view[i]); }
         }
     }
 
