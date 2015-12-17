@@ -161,7 +161,7 @@ public class Main extends Application {
                 currView.setScaleX(1);
                 currView.setScaleY(1);
             });
-            tiles.getChildren().add(view[i]);
+            if(!dir.isHidden) { tiles.getChildren().add(view[i]); }
         }
     }
 
@@ -295,26 +295,31 @@ public class Main extends Application {
         result.ifPresent(pair -> {
             String name = pair.getKey();
             String type = pair.getValue();
+            String permission = "r/w", ext = "";
+            File file;
             switch (type) {
                 case "Text (txt)":
-                    fileSystem.newFile(name, "txt", "r/w");
+                    ext = "txt";
                     break;
                 case "Image (jpg)":
-                    fileSystem.newFile(name, "jpg", "r/w");
+                    ext = "jpg";
                     break;
                 case "Sound (mp3)":
-                    fileSystem.newFile(name, "mp3", "r/w");
+                    ext = "mp3";
                     break;
                 case "Video (mp4)":
-                    fileSystem.newFile(name, "mp4", "r/w");
+                    ext = "mp4";
                     break;
                 case "PDF (pdf)":
-                    fileSystem.newFile(name, "pdf", "r/w");
+                    ext = "pdf";
                     break;
                 case "Website (html)":
-                    fileSystem.newFile(name, "html", "r");
+                    ext = "html";
                     break;
             }
+            file = new File(name,ext,fileSystem.getCurrentFolder().getPath() + "/"+name+"."+ext,fileSystem.getCurrentFolder(),permission);
+            new FileChooser(file);
+            fileSystem.getCurrentFolder().children.add(file);
         });
         refresh();
     }
