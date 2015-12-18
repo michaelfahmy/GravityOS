@@ -1,7 +1,9 @@
 package sfe.os;
 
 import apps.ImageViewer;
+import apps.MyMedia;
 import apps.WebBrowser;
+
 import java.io.*;
 import java.util.LinkedList;
 
@@ -136,19 +138,19 @@ public class FileSystem {
                             break;
                         case "mp3":
                             System.out.println("Opening music player");
-//                            new JavaFXMediaPlayer(((File) toBeOpened).fileUrl);
+                            new MyMedia(toBeOpened.getRealPath());
                             break;
                         case "mp4":
                             System.out.println("Opening video player");
-//                            new JavaFXMediaPlayer(((File) toBeOpened).fileUrl);
+                            new MyMedia(toBeOpened.getRealPath());
                             break;
                         case "pdf":
                             System.out.println("Opening pdf viewer");
-//                            new PDFViewer(((File) toBeOpened).fileUrl);
+//                            new PDFViewer(toBeOpened.getRealPath());
                             break;
                         case "html":
                             System.out.println("Opening browser");
-                            new WebBrowser(((File) toBeOpened).fileUrl);
+                            new WebBrowser(toBeOpened.getRealPath());
                             break;
                     }
                 }

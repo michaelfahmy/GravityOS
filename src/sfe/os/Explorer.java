@@ -307,7 +307,7 @@ public class Explorer {
                     ext = "html";
                     break;
             }
-            file = new File(name, ext, fileSystem.getCurrentFolder().getPath() + "/" + name + "." + ext, fileSystem.getCurrentFolder() ,permission);
+            file = new File(name,ext,fileSystem.getCurrentFolder().getPath() + "/"+name+"."+ext,fileSystem.getCurrentFolder(),permission);
             new sfe.os.FileChooser(file);
             fileSystem.getCurrentFolder().children.add(file);
         });
