@@ -1,5 +1,5 @@
 package sfe.os;
-
+import apps.NotaPad;
 import apps.ImageViewer;
 import apps.WebBrowser;
 import java.io.*;
@@ -129,6 +129,7 @@ public class FileSystem {
                     switch (((File) toBeOpened).extension) {
                         case "txt":
                             System.out.println("Opening text editor");
+                            new NotaPad();
                             break;
                         case "jpg":
                             System.out.println("Opening image viewer");

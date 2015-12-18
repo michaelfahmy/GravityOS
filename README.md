@@ -1,3 +1,0 @@
-# OSProject
-
-OS Project Demo
