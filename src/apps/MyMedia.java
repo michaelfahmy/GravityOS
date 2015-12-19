@@ -82,15 +82,14 @@ public class MyMedia {
             final StackPane layout = new StackPane();
 
             //dummy data to check the player status
-           // url = "/media/ahmadz/AhMeDz/SafeZone/Intellij/OSProject/src/res/files/vid.mp4";
+            // url = "/media/ahmadz/AhMeDz/SafeZone/Intellij/OSProject/src/res/files/vid.mp4";
+            // url = "/home/michael/song.mp3";
 
-            //System.out.println(url);
-
-            // determine the source directory for the playlist
-            final File dir = new File(url.replace("file:",""));
+            // determine the source directory
+            final File dir = new File(url.replace("file:", ""));
+            System.out.println("file -> " + dir);
 
             //System.out.println(!dir.isFile() + " " + !dir.exists() + " " + !dir.getPath().endsWith(".mp3") + " " + !dir.getPath().endsWith(".mp4"));
-
             if (!dir.isFile() || !dir.exists() ||  !(dir.getPath().endsWith(".mp3") || dir.getPath().endsWith(".mp4"))) {
                 System.out.println("8alat keda");
                 System.exit(0);
@@ -108,12 +107,10 @@ public class MyMedia {
             for (int i = 0; i < players.size(); i++) {
                 final MediaPlayer player     = players.get(i);
                 final MediaPlayer nextPlayer = players.get((i + 1) % players.size());
-                player.setOnEndOfMedia(new Runnable() {
-                    @Override public void run() {
-                        player.currentTimeProperty().removeListener(progressChangeListener);
-                        mediaView.setMediaPlayer(nextPlayer);
-                        nextPlayer.play();
-                    }
+                player.setOnEndOfMedia(() -> {
+                    player.currentTimeProperty().removeListener(progressChangeListener);
+                    mediaView.setMediaPlayer(nextPlayer);
+                    nextPlayer.play();
                 });
             }
 
