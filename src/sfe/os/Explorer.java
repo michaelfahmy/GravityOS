@@ -285,31 +285,36 @@ public class Explorer {
         result.ifPresent(pair -> {
             String name = pair.getKey();
             String type = pair.getValue();
-            String permission = "r/w", ext = "";
-            File file;
+            String permission = null, ext = null;
             switch (type) {
                 case "Text":
                     ext = "txt";
+                    permission = "r/w";
                     break;
                 case "Image":
                     ext = "jpg";
+                    permission = "r";
                     break;
                 case "Sound":
                     ext = "mp3";
+                    permission = "r";
                     break;
                 case "Video":
                     ext = "mp4";
+                    permission = "r";
                     break;
                 case "PDF":
                     ext = "pdf";
+                    permission = "r";
                     break;
                 case "Website":
                     ext = "html";
+                    permission = "r";
                     break;
             }
-            file = new File(name,ext,fileSystem.getCurrentFolder().getPath() + "/"+name+"."+ext,fileSystem.getCurrentFolder(),permission);
-            new sfe.os.FileChooser(file);
-            fileSystem.getCurrentFolder().children.add(file);
+            File f = fileSystem.newFile(name, ext, permission);
+            if (!type.equals("Text") && !type.equals("Website"))
+                new sfe.os.FileChooser(f);
         });
         refresh();
     }

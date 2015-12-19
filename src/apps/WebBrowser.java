@@ -57,6 +57,8 @@ public class WebBrowser {
         TextField url;
 
         public WebViewPane() {
+            url = new TextField();
+            url.setPrefWidth(800);
             browser = new WebView();
             engine = browser.getEngine();
             if (fileUrl == null) {
@@ -69,28 +71,28 @@ public class WebBrowser {
             }
             history = browser.getEngine().getHistory();
 
-            backButton = new Button(null, new ImageView(new Image("res/browserIcons/back.png")));
+            backButton = new Button(null, new ImageView(new Image("res/BrowserIcons/back.png")));
             backButton.setOnAction((ActionEvent e) -> {
                 browser.getEngine().load(goBack());
             });
             backButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> backButton.setEffect(new DropShadow()));
             backButton.addEventHandler(MouseEvent.MOUSE_EXITED, event -> backButton.setEffect(null));
 
-            forwardButton = new Button(null, new ImageView(new Image("res/browserIcons/forward.png")));
+            forwardButton = new Button(null, new ImageView(new Image("res/BrowserIcons/forward.png")));
             forwardButton.setOnAction((ActionEvent e) -> {
                 browser.getEngine().load(goForward());
             });
             forwardButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> forwardButton.setEffect(new DropShadow()));
             forwardButton.addEventHandler(MouseEvent.MOUSE_EXITED, event-> forwardButton.setEffect(null));
 
-            reloadButton = new Button(null, new ImageView(new Image("res/browserIcons/reload.png")));
+            reloadButton = new Button(null, new ImageView(new Image("res/BrowserIcons/reload.png")));
             reloadButton.setOnAction(event -> {
                 browser.getEngine().reload();
             });
             reloadButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> reloadButton.setEffect(new DropShadow()));
             reloadButton.addEventHandler(MouseEvent.MOUSE_EXITED, event -> reloadButton.setEffect(null));
 
-            goButton = new Button(null, new ImageView(new Image("res/browserIcons/go.jpg")));
+            goButton = new Button(null, new ImageView(new Image("res/BrowserIcons/go.jpg")));
             goButton.setOnAction(event -> {
                 // adding the http or https prefix if user didn't type it
                 if ( url.getText().length() > 7 && (url.getText(0, 7).equals("http://") || url.getText(0, 8).equals("https://"))) {
@@ -121,9 +123,6 @@ public class WebBrowser {
                 for (WebHistory.Entry e : c.getAddedSubList())
                     webHistoryComboBox.getItems().add(e.getUrl());
             });
-
-            url = new TextField();
-            url.setPrefWidth(800);
 
             //Enabling and Disabling back and forward buttons
             browser.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
