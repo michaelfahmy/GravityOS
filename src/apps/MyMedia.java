@@ -87,7 +87,7 @@ public class MyMedia {
 
             // determine the source directory
             final File dir = new File(url.replace("file:", ""));
-            System.out.println("file -> " + dir);
+            System.out.println(dir);
 
             //System.out.println(!dir.isFile() + " " + !dir.exists() + " " + !dir.getPath().endsWith(".mp3") + " " + !dir.getPath().endsWith(".mp4"));
             if (!dir.isFile() || !dir.exists() ||  !(dir.getPath().endsWith(".mp3") || dir.getPath().endsWith(".mp4"))) {

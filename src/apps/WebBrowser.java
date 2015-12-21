@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
@@ -23,9 +24,13 @@ import javafx.scene.web.WebView;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.net.InetSocketAddress;
+import java.net.Socket;
+
 
 public class WebBrowser {
 
+    public static final String defaultUrl = "www.google.com";
     private String fileUrl = null;
 
     public WebBrowser() {
@@ -42,6 +47,39 @@ public class WebBrowser {
         stage.setTitle("Browser");
         stage.setScene(new Scene(new WebViewPane()));
         stage.show();
+        if (!checkIntConnection(defaultUrl)) {
+            alert();
+        }
+    }
+
+    //checking connection
+    public boolean checkIntConnection(String url) {
+        boolean status = false;
+        Socket sock = new Socket();
+        InetSocketAddress address = new InetSocketAddress(url, 80);
+        try {
+            sock.connect(address, 3000);
+            if (sock.isConnected()) {
+                status = true;
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        } finally {
+            try {
+                sock.close();
+            } catch (Exception e) {
+                System.out.println(e.toString());
+            }
+        }
+        return status;
+    }
+
+    public void alert() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Warning");
+        alert.setHeaderText("Internet Connection");
+        alert.setContentText("No Internet Connection!");
+        alert.showAndWait();
     }
 
 
@@ -61,9 +99,10 @@ public class WebBrowser {
             url.setPrefWidth(800);
             browser = new WebView();
             engine = browser.getEngine();
+
             if (fileUrl == null) {
-                url.setText("http://www.google.com");
-                engine.load("http://www.google.com");
+                url.setText(defaultUrl);
+                engine.load(defaultUrl);
             }
             else {
                 url.setText(fileUrl);
@@ -73,21 +112,30 @@ public class WebBrowser {
 
             backButton = new Button(null, new ImageView(new Image("res/BrowserIcons/back.png")));
             backButton.setOnAction((ActionEvent e) -> {
-                browser.getEngine().load(goBack());
+                if (!checkIntConnection(defaultUrl)) {
+                    alert();
+                } else
+                    browser.getEngine().load(goBack());
             });
             backButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> backButton.setEffect(new DropShadow()));
             backButton.addEventHandler(MouseEvent.MOUSE_EXITED, event -> backButton.setEffect(null));
 
             forwardButton = new Button(null, new ImageView(new Image("res/BrowserIcons/forward.png")));
             forwardButton.setOnAction((ActionEvent e) -> {
-                browser.getEngine().load(goForward());
+                if (!checkIntConnection(defaultUrl)) {
+                    alert();
+                } else
+                    browser.getEngine().load(goForward());
             });
             forwardButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> forwardButton.setEffect(new DropShadow()));
             forwardButton.addEventHandler(MouseEvent.MOUSE_EXITED, event-> forwardButton.setEffect(null));
 
             reloadButton = new Button(null, new ImageView(new Image("res/BrowserIcons/reload.png")));
             reloadButton.setOnAction(event -> {
-                browser.getEngine().reload();
+                if (!checkIntConnection(defaultUrl)) {
+                    alert();
+                } else
+                    browser.getEngine().reload();
             });
             reloadButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> reloadButton.setEffect(new DropShadow()));
             reloadButton.addEventHandler(MouseEvent.MOUSE_EXITED, event -> reloadButton.setEffect(null));
@@ -95,12 +143,16 @@ public class WebBrowser {
             goButton = new Button(null, new ImageView(new Image("res/BrowserIcons/go.jpg")));
             goButton.setOnAction(event -> {
                 // adding the http or https prefix if user didn't type it
-                if ( url.getText().length() > 7 && (url.getText(0, 7).equals("http://") || url.getText(0, 8).equals("https://"))) {
-                    browser.getEngine().load(url.getText());
-                } else if (url.getText().length() > 7 && !url.getText(0, 7).equals("http://")) {
-                    browser.getEngine().load("http://" + url.getText());
+                if (!checkIntConnection(defaultUrl)) {
+                    alert();
                 } else {
-                    browser.getEngine().load("https://" + url.getText());
+                    if (url.getText().length() > 7 && (url.getText(0, 7).equals("http://") || url.getText(0, 8).equals("https://"))) {
+                        browser.getEngine().load(url.getText());
+                    } else if (url.getText().length() > 7 && !url.getText(0, 7).equals("http://")) {
+                        browser.getEngine().load("http://" + url.getText());
+                    } else {
+                        browser.getEngine().load("https://" + url.getText());
+                    }
                 }
             });
             goButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> goButton.setEffect(new DropShadow()));
