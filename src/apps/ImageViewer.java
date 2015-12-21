@@ -19,8 +19,6 @@ public class ImageViewer {
     ImageView imgView = new ImageView();
 
     public ImageViewer(String fileUrl) {
-        System.out.println(fileUrl);
-
         Stage stage = new Stage();
         stage.setTitle("Image Viewer");
 
