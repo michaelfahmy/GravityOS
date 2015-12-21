@@ -86,15 +86,14 @@ public class MyMedia {
             // url = "/home/michael/song.mp3";
 
             // determine the source directory
-            url = url.replace(" ","%20");
-//            final File dir = new File(url);
-//            System.out.println(dir);
-//
-//            System.out.println(!dir.isFile() + " " + !dir.exists() + " " + !dir.getPath().endsWith(".mp3") + " " + !dir.getPath().endsWith(".mp4"));
-//            if (!dir.isFile() || !dir.exists() ||  !(dir.getPath().endsWith(".mp3") || dir.getPath().endsWith(".mp4"))) {
-//                System.out.println("8alat keda");
-//                System.exit(0);
-//            }
+            final File dir = new File(url.replace("file:", ""));
+            System.out.println(dir);
+
+            //System.out.println(!dir.isFile() + " " + !dir.exists() + " " + !dir.getPath().endsWith(".mp3") + " " + !dir.getPath().endsWith(".mp4"));
+            if (!dir.isFile() || !dir.exists() ||  !(dir.getPath().endsWith(".mp3") || dir.getPath().endsWith(".mp4"))) {
+                System.out.println("8alat keda");
+                System.exit(0);
+            }
             // create some media players.
             final List<MediaPlayer> players = new ArrayList<>();
             try {

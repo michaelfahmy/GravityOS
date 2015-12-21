@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jpedal-trial">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/jpedal-trial.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

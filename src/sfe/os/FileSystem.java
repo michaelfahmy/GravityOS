@@ -1,8 +1,5 @@
 package sfe.os;
-import apps.TextEditor;
-import apps.ImageViewer;
-import apps.MyMedia;
-import apps.WebBrowser;
+import apps.*;
 import java.io.*;
 import java.util.LinkedList;
 
@@ -158,7 +155,7 @@ public class FileSystem {
                             break;
                         case "pdf":
                             System.out.println("Opening pdf viewer");
-//                            new PDFViewer(toBeOpened.getRealPath());
+                            new PDFViewer(toBeOpened.getRealPath());
                             break;
                         case "html":
                             System.out.println("Opening browser");
