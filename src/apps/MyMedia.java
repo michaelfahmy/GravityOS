@@ -22,6 +22,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,8 +50,6 @@ public class MyMedia {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                if (mediaView.getMediaPlayer().getStatus().equals(MediaPlayer.Status.PLAYING))
-                    mediaView.getMediaPlayer().stop();
                 try {
                     this.finalize();
                 } catch (Throwable throwable) {
@@ -86,17 +86,24 @@ public class MyMedia {
             // url = "/home/michael/song.mp3";
 
             // determine the source directory
-            final File dir = new File(url.replace("file:", ""));
-            System.out.println("file -> " + dir);
-
-            //System.out.println(!dir.isFile() + " " + !dir.exists() + " " + !dir.getPath().endsWith(".mp3") + " " + !dir.getPath().endsWith(".mp4"));
-            if (!dir.isFile() || !dir.exists() ||  !(dir.getPath().endsWith(".mp3") || dir.getPath().endsWith(".mp4"))) {
-                System.out.println("8alat keda");
-                System.exit(0);
-            }
+            url = url.replace(" ","%20");
+//            final File dir = new File(url);
+//            System.out.println(dir);
+//
+//            System.out.println(!dir.isFile() + " " + !dir.exists() + " " + !dir.getPath().endsWith(".mp3") + " " + !dir.getPath().endsWith(".mp4"));
+//            if (!dir.isFile() || !dir.exists() ||  !(dir.getPath().endsWith(".mp3") || dir.getPath().endsWith(".mp4"))) {
+//                System.out.println("8alat keda");
+//                System.exit(0);
+//            }
             // create some media players.
             final List<MediaPlayer> players = new ArrayList<>();
-            players.add(createPlayer(dir.toURI().toString()));
+            try {
+                URI U = new URI(url);
+                players.add(createPlayer(U.toString()));
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+
 
             // create a view to show the mediaplayers.
             mediaView = new MediaView(players.get(0));

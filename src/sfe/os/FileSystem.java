@@ -3,15 +3,14 @@ import apps.TextEditor;
 import apps.ImageViewer;
 import apps.MyMedia;
 import apps.WebBrowser;
-
 import java.io.*;
 import java.util.LinkedList;
 
 
 class Directory implements Serializable {
 
-    String name, path, realPath;
-    Folder parent;
+    private String name, path, realPath;
+    private Folder parent;
     boolean isHidden = false;
 
     public Directory(String name, String path, Folder parent) {
@@ -32,6 +31,10 @@ class Directory implements Serializable {
     public String getPath() {
         return this.path;
     }
+    public void setPath(String path) { this.path = path; }
+    public Folder getParent() { return this.parent; }
+    public String getName() { return this.name; }
+    public void setName(String name) { this.name = name; }
 }
 
 class Folder extends Directory {
@@ -65,7 +68,7 @@ public class FileSystem {
     private static final String COPY_PROCESS = "copy";
     private static final String CUT_PROCESS = "cut";
 
-    private Folder root, currentFolder, storage;
+    private Folder root, currentFolder;
     private Directory selected = null;
     Directory toBePasted;
     String whichProcess;
@@ -78,7 +81,9 @@ public class FileSystem {
         this.seeds(storage, "src/storage");
         this.retrieve();
     }
-
+    public Folder getRoot() {
+        return this.root;
+    }
     public void select(Directory selected) {
         this.selected = selected;
     }
@@ -92,14 +97,14 @@ public class FileSystem {
     }
 
     Folder newFolder(String name) {
-        String path = this.currentFolder.path + "/" + name;
+        String path = this.currentFolder.getPath() + "/" + name;
         Folder child = new Folder(name, path, this.currentFolder);
         this.currentFolder.children.add(child);
         return child;
     }
 
     File newFile(String name, String ext, String permission) {
-        String path = this.currentFolder.path + "/" + name + ext;
+        String path = this.currentFolder.getPath() + "/" + name + ext;
         File child = new File(name, ext, path, this.currentFolder, permission);
         this.currentFolder.children.add(child);
         return child;
@@ -108,7 +113,7 @@ public class FileSystem {
     void rename(Directory toBeRenamed, String name) {
         for (int i = 0; i < this.currentFolder.children.size(); ++i) {
             if (toBeRenamed == this.currentFolder.children.get(i)) {
-                this.currentFolder.children.get(i).name = name;
+                this.currentFolder.children.get(i).setName(name);
                 break;
             }
         }
@@ -129,6 +134,11 @@ public class FileSystem {
                 if (toBeOpened instanceof Folder) {
                     this.currentFolder = (Folder) toBeOpened;
                 } else {
+                    String pth = toBeOpened.getRealPath();
+                    //System.out.println(pth);
+                    int idx = pth.indexOf("/storage");
+                    pth = pth.substring(idx);
+                    pth = pth.replaceAll("%20", " ");
                     switch (((File) toBeOpened).extension) {
                         case "txt":
                             System.out.println("Opening text editor");
@@ -136,15 +146,15 @@ public class FileSystem {
                             break;
                         case "jpg":
                             System.out.println("Opening image viewer");
-                            new ImageViewer(toBeOpened.getRealPath());
+                            new ImageViewer(pth);
                             break;
                         case "mp3":
                             System.out.println("Opening music player");
-                            new MyMedia(toBeOpened.getRealPath());
+                            new MyMedia(pth);
                             break;
                         case "mp4":
                             System.out.println("Opening video player");
-                            new MyMedia(toBeOpened.getRealPath());
+                            new MyMedia(pth);
                             break;
                         case "pdf":
                             System.out.println("Opening pdf viewer");
@@ -161,7 +171,7 @@ public class FileSystem {
     }
 
     void back() {
-        this.currentFolder = this.currentFolder.parent != null ? this.currentFolder.parent : this.root;
+        this.currentFolder = this.currentFolder.getParent() != null ? this.currentFolder.getParent() : this.root;
     }
 
     void copy(Directory toBeCopied) {
@@ -186,14 +196,14 @@ public class FileSystem {
 
     void paste() {
         if (this.whichProcess.equals(CUT_PROCESS)) {
-            for (int i = 0; i < this.toBePasted.parent.children.size(); i++) {
-                if (toBePasted.parent.children.get(i) == toBePasted) {
-                    toBePasted.parent.children.remove(i);
+            for (int i = 0; i < this.toBePasted.getParent().children.size(); i++) {
+                if (toBePasted.getParent().children.get(i) == toBePasted) {
+                    toBePasted.getParent().children.remove(i);
                     break;
                 }
             }
         }
-        toBePasted.path = this.currentFolder.path + "/" + toBePasted.name;
+        toBePasted.setPath(this.currentFolder.getPath() + "/" + toBePasted.getName());
         this.currentFolder.children.add(toBePasted);
     }
 
@@ -224,20 +234,20 @@ public class FileSystem {
     }
 
     void seeds(Folder currPos, String path) {
-        String name, extension, permision = "";
+        String name, extension, permission = "";
         java.io.File resDir = (new java.io.File(path));
         for(java.io.File currFile: resDir.listFiles()) {
             if(currFile.isDirectory()) {
                 name = currFile.getName();
-                Folder folder = new Folder(name, currPos.path + "/" + name, currPos);
+                Folder folder = new Folder(name, currPos.getPath() + "/" + name, currPos);
                 folder.setRealPath(currFile.getPath());
                 currPos.children.add(folder);
                 seeds(folder, currFile.getPath());
             }else {
                 name = currFile.getName().substring(0, currFile.getName().indexOf('.'));
                 extension = currFile.getName().substring(currFile.getName().indexOf('.') + 1);
-                permision = extension.equals(".html") ? "r" : "r/w";
-                File fle = new File(name, extension, currPos.path + "/" + name + "." + extension,currPos, permision);
+                permission = extension.equals(".html") ? "r" : "r/w";
+                File fle = new File(name, extension, currPos.getPath() + "/" + name + "." + extension,currPos, permission);
                 fle.setRealPath(currFile.toURI().toString());
                 currPos.children.add(fle);
             }
@@ -256,7 +266,7 @@ public class FileSystem {
         while (t-- > 0) {
             System.out.print("-");
         }
-        System.out.println(current.name);
+        System.out.println(current.getName());
         if (current instanceof File) {
             return;
         }

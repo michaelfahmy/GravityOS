@@ -23,9 +23,7 @@ public class FileChooser {
         stage.setWidth(750);
         explorer = new BorderPane();
         fileSystem = new FileSystem();
-
         refresh(tobe);
-
         stage.setScene(new Scene(explorer));
         stage.show();
     }
@@ -46,7 +44,7 @@ public class FileChooser {
         Label view[] = new Label[fileSystem.getCurrentFolder().getChildren().size()];
         for (int i = 0; i < view.length; i++) {
             Directory dir = fileSystem.getCurrentFolder().getChildren().get(i);
-            view[i] = new Label(dir.name);
+            view[i] = new Label(dir.getName());
             view[i].setContentDisplay(ContentDisplay.TOP);
             view[i].setPadding(new Insets(0, 5, 0, 5));
             view[i].setGraphicTextGap(1);
@@ -76,9 +74,8 @@ public class FileChooser {
                 currView.setScaleX(1);
                 currView.setScaleY(1);
             });
-
-            if(dir.parent == null && dir.isHidden) { tiles.getChildren().add(view[i]); }
-            else if (dir.parent != null){ tiles.getChildren().add(view[i]); }
+            if(dir.isHidden() && dir.getParent() == fileSystem.getRoot()) { tiles.getChildren().add(view[i]); }
+            else if(dir.getParent() != fileSystem.getRoot()) {  tiles.getChildren().add(view[i]); }
         }
     }
 

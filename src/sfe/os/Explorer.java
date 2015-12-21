@@ -71,7 +71,7 @@ public class Explorer {
         back.setOnAction(event -> {
             fileSystem.back();
             refresh();
-            if (fileSystem.getCurrentFolder().name.equals("root")) {
+            if (fileSystem.getCurrentFolder().getName().equals("root")) {
                 back.setDisable(true);
             }
         });
@@ -122,7 +122,7 @@ public class Explorer {
         Label view[] = new Label[fileSystem.getCurrentFolder().getChildren().size()];
         for (int i = 0; i < view.length; i++) {
             Directory dir = fileSystem.getCurrentFolder().getChildren().get(i);
-            view[i] = new Label(dir.name);
+            view[i] = new Label(dir.getName());
             view[i].setContentDisplay(ContentDisplay.TOP);
             view[i].setPadding(new Insets(0, 5, 0, 5));
             view[i].setGraphicTextGap(1);
