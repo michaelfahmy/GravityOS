@@ -2,7 +2,7 @@
 
 Virtual OS Demo using JavaFX
 
-###### To use media on Ubuntu
+##### To use media on Ubuntu
 
 you need to download these libraries
 
@@ -10,4 +10,4 @@ you need to download these libraries
 [libavcodec53](http://security.ubuntu.com/ubuntu/pool/main/liba/libav/libavcodec53_0.8.17-0ubuntu0.12.04.1_amd64.deb) - 
 [libavformat53](http://security.ubuntu.com/ubuntu/pool/main/liba/libav/libavformat53_0.8.17-0ubuntu0.12.04.1_amd64.deb) -
 
-then install them using `$ sudo dpkg -i libav*.deb'`
+then install them using `$ sudo dpkg -i libav*.deb`
