@@ -1,4 +1,5 @@
 package sfe.os;
+import directory.*;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -12,8 +13,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-
 import java.util.Optional;
+
 
 public class Explorer {
 
@@ -76,7 +77,7 @@ public class Explorer {
         back.setOnAction(event -> {
             fileSystem.back();
             refresh();
-            if (fileSystem.getCurrentFolder().name.equals("root")) {
+            if (fileSystem.getCurrentFolder().getName().equals("root")) {
                 back.setDisable(true);
                 mark=false;
             }
@@ -114,7 +115,6 @@ public class Explorer {
     }
 
     private void refresh() {
-
         TilePane tiles = new TilePane();
         tiles.setPrefColumns(8);
         tiles.setHgap(25);
@@ -122,16 +122,17 @@ public class Explorer {
         tiles.setPadding(new Insets(20));
         tiles.setOnMouseClicked(this::tilePaneRightClickContextMenu);
         tiles.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        explorer.setBottom(new Label(fileSystem.getCurrentFolder().getPath()));
         populateTiles(tiles);
-
         explorer.setCenter(tiles);
+
     }
 
     private void populateTiles(TilePane tiles) {
         Label view[] = new Label[fileSystem.getCurrentFolder().getChildren().size()];
         for (int i = 0; i < view.length; i++) {
             Directory dir = fileSystem.getCurrentFolder().getChildren().get(i);
-            view[i] = new Label(dir.name);
+            view[i] = new Label(dir.getName());
             view[i].setContentDisplay(ContentDisplay.TOP);
             view[i].setPadding(new Insets(0, 5, 0, 5));
             view[i].setGraphicTextGap(1);
@@ -195,7 +196,7 @@ public class Explorer {
             view.setGraphic(new ImageView("res/folder.png"));
         } else {
             File file = (File) dir;
-            switch (file.extension) {
+            switch (file.getExtension()) {
                 case "txt":
                     view.setGraphic(new ImageView("res/txt.png"));
                     break;
@@ -330,8 +331,8 @@ public class Explorer {
                     break;
             }
             File f = fileSystem.newFile(name, ext, permission);
-            if (!type.equals("Text") && !type.equals("Website"))
-                new sfe.os.FileChooser(f);
+//            if (!type.equals("Text") && !type.equals("Website"))
+//                new sfe.os.FileChooser(f);
         });
         refresh();
     }
