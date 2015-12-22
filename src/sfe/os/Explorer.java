@@ -1,9 +1,9 @@
 package sfe.os;
-import directory.*;
 
-import javafx.application.Platform;
+import directory.Directory;
+import directory.File;
+import directory.Folder;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -12,14 +12,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.util.Pair;
+
 import java.util.Optional;
 
 
 public class Explorer {
 
     private Stage stage;
-    private FileSystem fileSystem;
+    public static FileSystem fileSystem;
     private ContextMenu rightClickMenu4Tiles = null;
     private BorderPane explorer;
     private Button back;
@@ -34,7 +34,7 @@ public class Explorer {
 
         fileSystem = new FileSystem();
 
-        back = new Button(null, new ImageView("res/icon-back.png"));
+        back = new Button(null, new ImageView("res/ExplorerIcons/icon-back.png"));
         back.setDisable(true);
         initRootLayout();
         refresh();
@@ -58,6 +58,7 @@ public class Explorer {
             close.setOnAction(event ->  { fileSystem.store(); stage.close(); });
             fileMenu.getItems().addAll(newFileMenu, close);
         }
+
         Menu editMenu = new Menu("Edit");
         {
             MenuItem copyMenu = new MenuItem("Copy");
@@ -84,27 +85,27 @@ public class Explorer {
         });
         Button newFile = new Button();
         newFile.setTooltip(new Tooltip("New File"));
-        newFile.setGraphic(new ImageView("res/newFile.png"));
+        newFile.setGraphic(new ImageView("res/ExplorerIcons/newFile.png"));
         newFile.setOnAction(event -> { newFileDialog(); mark=false; });
         Button newFolder = new Button();
         newFolder.setTooltip(new Tooltip("New Folder"));
-        newFolder.setGraphic(new ImageView("res/newFolder.png"));
+        newFolder.setGraphic(new ImageView("res/ExplorerIcons/newFolder.png"));
         newFolder.setOnAction(event -> { newFolderDialog(); mark=false; });
         Button copyBtn = new Button();
         copyBtn.setTooltip(new Tooltip("Copy"));
-        copyBtn.setGraphic(new ImageView("res/copy.png"));
+        copyBtn.setGraphic(new ImageView("res/ExplorerIcons/copy.png"));
         copyBtn.setOnAction(event -> {fileSystem.copy(fileSystem.getSelected()); refresh();});
         Button cutBtn = new Button();
         cutBtn.setTooltip(new Tooltip("Cut"));
-        cutBtn.setGraphic(new ImageView("res/cut.png"));
+        cutBtn.setGraphic(new ImageView("res/ExplorerIcons/cut.png"));
         cutBtn.setOnAction(event -> {fileSystem.cut(fileSystem.getSelected()); refresh(); });
         Button pasteBtn = new Button();
         pasteBtn.setTooltip(new Tooltip("Paste"));
-        pasteBtn.setGraphic(new ImageView("res/paste.png"));
+        pasteBtn.setGraphic(new ImageView("res/ExplorerIcons/paste.png"));
         pasteBtn.setOnAction(event -> { fileSystem.paste(); refresh(); mark=false;});
         Button delete = new Button();
         delete.setTooltip(new Tooltip("Delete"));
-        delete.setGraphic(new ImageView("res/delete.png"));
+        delete.setGraphic(new ImageView("res/ExplorerIcons/delete.png"));
         delete.setOnAction(event -> {fileSystem.delete(fileSystem.getSelected()); refresh(); mark=false;});
 
         toolBar.getItems().addAll(back, newFile, newFolder, copyBtn, cutBtn, pasteBtn, delete);
@@ -151,9 +152,10 @@ public class Explorer {
                     if(event.getClickCount() == 2) {
                         mark = false;
                         fileSystem.open(dir);
-                        back.setDisable(false);
-                        if (dir instanceof Folder)
+                        if (dir instanceof Folder) {
+                            back.setDisable(false);
                             refresh();
+                        }
                     }
                 }
             });
@@ -166,6 +168,34 @@ public class Explorer {
                 currView.setScaleY(1);
             });
             if(!dir.isHidden()) { tiles.getChildren().add(view[i]); }
+        }
+    }
+
+    private void setIcon(Directory dir, Label view) {
+        if (dir instanceof Folder) {
+            view.setGraphic(new ImageView("res/ExplorerIcons/folder.png"));
+        } else {
+            File file = (File) dir;
+            switch (file.getExtension()) {
+                case "txt":
+                    view.setGraphic(new ImageView("res/ExplorerIcons/txt.png"));
+                    break;
+                case "jpg":
+                    view.setGraphic(new ImageView("res/ExplorerIcons/jpg.png"));
+                    break;
+                case "mp3":
+                    view.setGraphic(new ImageView("res/ExplorerIcons/mp3.png"));
+                    break;
+                case "mp4":
+                    view.setGraphic(new ImageView("res/ExplorerIcons/mp4.png"));
+                    break;
+                case "html":
+                    view.setGraphic(new ImageView("res/ExplorerIcons/html.png"));
+                    break;
+                default:
+                    view.setGraphic(new ImageView("res/ExplorerIcons/file.png"));
+                    break;
+            }
         }
     }
 
@@ -183,42 +213,19 @@ public class Explorer {
         SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
         SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
         rightClickMenu4Tiles.getItems().addAll(newFolderItem, newFileItem, separatorMenuItem1, pasteItem, separatorMenuItem2, propertiesItem);
-        if(event.getButton().equals(MouseButton.SECONDARY) && (!event.getTarget().toString().contains("label") && !event.getTarget().toString().contains("Label"))) { rightClickMenu4Tiles.show(explorer, event.getScreenX(), event.getScreenY());}
-        else if (event.getButton().equals(MouseButton.PRIMARY) && (!event.getTarget().toString().contains("label"))) {
+        if(event.getButton().equals(MouseButton.SECONDARY)
+            && (!event.getTarget().toString().contains("label") && !event.getTarget().toString().contains("Label"))) {
+            mark = false;
+            fileSystem.select(null, null);
+            rightClickMenu4Tiles.show(explorer, event.getScreenX(), event.getScreenY());
+        } else if (event.getButton().equals(MouseButton.PRIMARY)
+                && (!event.getTarget().toString().contains("label") && !event.getTarget().toString().contains("Label"))) {
             refresh();
             mark=false;
             fileSystem.select(null, null);
-        } else { rightClickMenu4Tiles.hide(); }
-    }
-
-    private void setIcon(Directory dir, Label view) {
-        if (dir instanceof Folder) {
-            view.setGraphic(new ImageView("res/folder.png"));
+            rightClickMenu4Tiles.hide();
         } else {
-            File file = (File) dir;
-            switch (file.getExtension()) {
-                case "txt":
-                    view.setGraphic(new ImageView("res/txt.png"));
-                    break;
-                case "jpg":
-                    view.setGraphic(new ImageView("res/jpg.png"));
-                    break;
-                case "mp3":
-                    view.setGraphic(new ImageView("res/mp3.png"));
-                    break;
-                case "mp4":
-                    view.setGraphic(new ImageView("res/mp4.png"));
-                    break;
-                case "pdf":
-                    view.setGraphic(new ImageView("res/pdf.png"));
-                    break;
-                case "html":
-                    view.setGraphic(new ImageView("res/html.png"));
-                    break;
-                default:
-                    view.setGraphic(new ImageView("res/file.png"));
-                    break;
-            }
+            rightClickMenu4Tiles.hide();
         }
     }
 
@@ -254,94 +261,29 @@ public class Explorer {
     }
 
     private void newFileDialog() {
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("New File");
-        dialog.setHeaderText("Header text mlosh lzma bs 3agbny xD");
-        dialog.setGraphic(new ImageView("res/newFile.png"));
+        dialog.setHeaderText("Enter your new file name below");
+        dialog.setGraphic(new ImageView("res/ExplorerIcons/newFile.png"));
+        dialog.setContentText("File name:");
 
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-
-        TextField textField = new TextField();
-        textField.setPromptText("File name");
-
-        grid.add(new Label("Name:"), 0, 0);
-        grid.add(textField, 1, 0);
-
-
-        ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.getItems().addAll("Text", "Image", "Sound", "Video", "PDF", "Website");
-        comboBox.setValue("Text");
-
-        grid.add(new Label("File type:"), 0, 1);
-        grid.add(comboBox, 1, 1);
-
-
-        ButtonType okBtnType = new ButtonType("Create", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(okBtnType, ButtonType.CANCEL);
-
-        Node okBtn = dialog.getDialogPane().lookupButton(okBtnType);
+        Button okBtn = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
         okBtn.setDisable(true);
 
-        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+        dialog.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
             okBtn.setDisable(newValue.trim().isEmpty());
         });
 
-
-        dialog.getDialogPane().setContent(grid);
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == okBtnType)
-                return new Pair<>(textField.getText(), comboBox.getValue());
-            return null;
-        });
-
-
-        Platform.runLater(textField::requestFocus);
-        Optional<Pair<String, String>> result = dialog.showAndWait();
-        result.ifPresent(pair -> {
-            String name = pair.getKey();
-            String type = pair.getValue();
-            String permission = null, ext = null;
-            switch (type) {
-                case "Text":
-                    ext = "txt";
-                    permission = "r/w";
-                    break;
-                case "Image":
-                    ext = "jpg";
-                    permission = "r";
-                    break;
-                case "Sound":
-                    ext = "mp3";
-                    permission = "r";
-                    break;
-                case "Video":
-                    ext = "mp4";
-                    permission = "r";
-                    break;
-                case "PDF":
-                    ext = "pdf";
-                    permission = "r";
-                    break;
-                case "Website":
-                    ext = "html";
-                    permission = "r";
-                    break;
-            }
-            File f = fileSystem.newFile(name, ext, permission);
-//            if (!type.equals("Text") && !type.equals("Website"))
-//                new sfe.os.FileChooser(f);
-        });
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(name -> fileSystem.newFile(name, "txt", "r/w"));
         refresh();
     }
 
     private void newFolderDialog() {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("New Folder");
-        dialog.setHeaderText("Header text mlosh lzma bs 3agbny xD");
-        dialog.setGraphic(new ImageView("res/newFolder.png"));
+        dialog.setHeaderText("Enter your new folder name below");
+        dialog.setGraphic(new ImageView("res/ExplorerIcons/newFolder.png"));
         dialog.setContentText("Folder name:");
 
         Button okBtn = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
@@ -359,7 +301,6 @@ public class Explorer {
     private void renameDir(Directory dir) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Rename");
-        dialog.setHeaderText("Header text mlosh lzma bs 3agbny xD");
         dialog.setContentText("New name:");
 
         Optional<String> result = dialog.showAndWait();

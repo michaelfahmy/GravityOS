@@ -30,25 +30,30 @@ public class FXMediaPlayer {
     private ProgressBar progress;
     private ChangeListener<Duration> progressChangeListener;
     boolean playing = false;
-    private File f;
+    private File f = null;
     private String type = "mp3";
 
     public FXMediaPlayer(File file) {
-        System.out.println(file.getPath());
-
-        if (!file.isFile() || !file.exists() ||  !(file.getPath().endsWith(".mp3") || file.getPath().endsWith(".mp4"))) {
-            System.out.println("3\'alat keda");
-            System.exit(0);
-        }
-        this.f = file;
-        this.type = f.getName().substring(f.getName().length() - 3, f.getName().length());
-
         stage = new Stage();
-        stage.setTitle("Gravity Player");
+        stage.setTitle("Media Player");
+
+        if (file != null) {
+            System.out.println(file.getPath());
+            if (!file.isFile() || !file.exists() || !(file.getPath().endsWith(".mp3") || file.getPath().endsWith(".mp4"))) {
+                System.out.println("3\'alat keda");
+                stage.close();
+            }
+            this.f = file;
+            this.type = f.getName().substring(f.getName().length() - 3, f.getName().length());
+        }
+
         stage.setScene(createScene());
         stage.setOnCloseRequest(event -> {
-            mediaView.getMediaPlayer().stop();
-            mediaView.getMediaPlayer().dispose();
+            stage.close();
+            if (mediaView != null) {
+                mediaView.getMediaPlayer().stop();
+                mediaView.getMediaPlayer().dispose();
+            }
         });
         stage.show();
     }
@@ -56,8 +61,9 @@ public class FXMediaPlayer {
     public Scene createScene() {
         BorderPane border = new BorderPane();
         border.setTop(menuBar());
+        if (f != null)
+            border.setCenter(mediaScene());
         border.setBottom(controlsBar());
-        border.setCenter(mediaScene());
         if (type.equals("mp3"))
             return new Scene(border, 300, 150);
         else

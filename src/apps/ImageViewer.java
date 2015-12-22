@@ -51,9 +51,6 @@ public class ImageViewer {
 
     public ScrollPane viewer(String fileUrl) {
 
-        Image img = new Image(fileUrl);
-        height = img.getHeight();
-
         VBox zoomControls = new VBox();
         Label buttonZoomIn = new Label(null, new ImageView(new Image("res/ImageViewerIcons/zoomIn.png")));
         Label buttonZoomOut = new Label(null, new ImageView(new Image("res/ImageViewerIcons/zoomOut.png")));
@@ -79,7 +76,15 @@ public class ImageViewer {
         zoomControls.setAlignment(Pos.TOP_LEFT);
         zoomControls.setPadding(new Insets(10));
 
-        imgView = new ImageView(img);
+        if (fileUrl != null) {
+            Image img = new Image(fileUrl);
+            height = img.getHeight();
+            imgView = new ImageView(img);
+        } else {
+            imgView = new ImageView();
+            imgView.setFitHeight(300);
+            imgView.setFitWidth(400);
+        }
         imgView.setPreserveRatio(true);
         imgView.setPickOnBounds(true);
         imgView.autosize();

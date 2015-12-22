@@ -1,6 +1,5 @@
 package apps;
 
-import directory.*;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -14,13 +13,14 @@ import javax.swing.*;
 import java.io.*;
 
 
-public class TextEditor {
+public class Memo {
 
     private Stage stage;
-    private directory.File chosenFile;
+    private directory.File chosenFile = null;
     static private int cnt = 0;
-    public TextEditor(directory.File chosenFile) {
-        this.chosenFile = chosenFile;
+
+    public Memo(directory.File chosenFile) {
+        this.chosenFile = chosenFile != null ? chosenFile : null;
         ++cnt;
         stage = new Stage();
         stage.setTitle("Text Editor");
@@ -44,12 +44,14 @@ public class TextEditor {
         Menu helpMenu = new Menu("Help");
         MenuItem aboutItem = new MenuItem("About Editor");
         TextArea txt;
+
         public nota() {
             this.txt = new TextArea();
             initialize();
         }
+
         void initialize() {
-            if (chosenFile.getRealPath() != null) {
+            if (chosenFile != null && chosenFile.getRealPath() != null) {
                 try {
                     BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(chosenFile.getRealPath())));
                     do {
@@ -60,6 +62,7 @@ public class TextEditor {
                 }
             }
         }
+
         public Scene not() {
             BorderPane border = new BorderPane();
             newItem.setOnAction(t -> txt.setText(""));
@@ -115,7 +118,7 @@ public class TextEditor {
             helpMenu.getItems().addAll(aboutItem);
 
             menuBar.getMenus().addAll(fileMenu, formatMenu, helpMenu);
-            menuBar.getStylesheets().add(TextEditor.class.getResource("NotpadStyle.css").toExternalForm());
+            menuBar.getStylesheets().add(Memo.class.getResource("MemoStyle.css").toExternalForm());
 
             border.setTop(menuBar);
             border.setCenter(txt);

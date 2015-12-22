@@ -1,15 +1,20 @@
 package sfe.os;
 
-import apps.*;
+import apps.FXMediaPlayer;
+import apps.ImageViewer;
+import apps.Memo;
+import apps.WebBrowser;
+import directory.Directory;
+import directory.File;
+import directory.Folder;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
+
 import java.io.*;
-import directory.*;
-import directory.File;
 
 
 public class FileSystem {
@@ -31,29 +36,35 @@ public class FileSystem {
     public Folder getRoot() {
         return this.root;
     }
+
     public void select(Directory selected, Label view) {
         this.selected = selected;
         if (view != null)
             view.setBackground(new Background(new BackgroundFill(Color.BLANCHEDALMOND, CornerRadii.EMPTY, Insets.EMPTY)));
     }
+
     public Directory getSelected() {
         return selected;
     }
+
     public Folder getCurrentFolder() {
         return currentFolder;
     }
+
     Folder newFolder(String name) {
         String path = this.currentFolder.getPath() + "/" + name;
         Folder child = new Folder(name, path, this.currentFolder);
         this.currentFolder.getChildren().add(child);
         return child;
     }
+
     File newFile(String name, String ext, String permission) {
         String path = this.currentFolder.getPath() + "/" + name + ext;
         File child = new File(name, ext, path, this.currentFolder, permission);
         this.currentFolder.getChildren().add(child);
         return child;
     }
+
     void rename(Directory toBeRenamed, String name) {
         for (int i = 0; i < this.currentFolder.getChildren().size(); ++i) {
             if (toBeRenamed == this.currentFolder.getChildren().get(i)) {
@@ -62,6 +73,7 @@ public class FileSystem {
             }
         }
     }
+
     void delete(Directory toBeDeleted) {
         for (int i = 0; i < this.currentFolder.getChildren().size(); ++i) {
             if (toBeDeleted == this.currentFolder.getChildren().get(i)) {
@@ -70,6 +82,7 @@ public class FileSystem {
             }
         }
     }
+
     void open(Directory toBeOpened) {
         for (int i = 0; i < this.currentFolder.getChildren().size(); ++i) {
             if (toBeOpened == this.currentFolder.getChildren().get(i)) {
@@ -86,7 +99,7 @@ public class FileSystem {
                     switch (((File) toBeOpened).getExtension()) {
                         case "txt":
                             System.out.println("Opening text editor");
-                            new TextEditor((File) toBeOpened);
+                            new Memo((File) toBeOpened);
                             break;
                         case "jpg":
                             System.out.println("Opening image viewer");
@@ -109,9 +122,11 @@ public class FileSystem {
             }
         }
     }
+
     void back() {
         this.currentFolder = this.currentFolder.getParent() != null ? this.currentFolder.getParent() : this.root;
     }
+
     void copy(Directory toBeCopied) {
         for (int i = 0; i < this.currentFolder.getChildren().size(); ++i) {
             if (toBeCopied == this.currentFolder.getChildren().get(i)) {
@@ -121,6 +136,7 @@ public class FileSystem {
             }
         }
     }
+
     void cut(Directory toBeCutted) {
         for (int i = 0; i < this.currentFolder.getChildren().size(); ++i) {
             if (toBeCutted == this.currentFolder.getChildren().get(i)) {
@@ -130,6 +146,7 @@ public class FileSystem {
             }
         }
     }
+
     void paste() {
         if (this.whichProcess.equals(CUT_PROCESS)) {
             for (int i = 0; i < this.toBePasted.getParent().getChildren().size(); i++) {
@@ -142,6 +159,7 @@ public class FileSystem {
         toBePasted.setPath(this.currentFolder.getPath() + "/" + toBePasted.getName());
         this.currentFolder.getChildren().add(toBePasted);
     }
+
     void store() {
         String address = "data.txt";
         ObjectOutputStream fileSystemData;
@@ -153,6 +171,7 @@ public class FileSystem {
             System.out.println("store(): " + e.toString());
         }
     }
+
     void retrieve() {
         String address = "data.txt";
         ObjectInputStream fileSystemData;
@@ -166,6 +185,7 @@ public class FileSystem {
             System.out.println("retrieve(): " + e.toString());
         }
     }
+
     void seeds(Folder currPos, String path) {
         String name, extension, permission = "";
         java.io.File resDir = (new java.io.File(path));
