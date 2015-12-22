@@ -1,5 +1,12 @@
 package sfe.os;
+
 import apps.*;
+import javafx.geometry.Insets;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 import java.io.*;
 import directory.*;
 import directory.File;
@@ -24,8 +31,10 @@ public class FileSystem {
     public Folder getRoot() {
         return this.root;
     }
-    public void select(Directory selected) {
+    public void select(Directory selected, Label view) {
         this.selected = selected;
+        if (view != null)
+            view.setBackground(new Background(new BackgroundFill(Color.BLANCHEDALMOND, CornerRadii.EMPTY, Insets.EMPTY)));
     }
     public Directory getSelected() {
         return selected;
@@ -85,19 +94,15 @@ public class FileSystem {
                             break;
                         case "mp3":
                             System.out.println("Opening music player");
-                            new MyMedia(pth);
+                            new FXMediaPlayer(new java.io.File(pth));
                             break;
                         case "mp4":
                             System.out.println("Opening video player");
-                            new MyMedia(pth);
-                            break;
-                        case "pdf":
-                            System.out.println("Opening pdf viewer");
-//                            new PDFViewer(toBeOpened.getRealPath());
+                            new FXMediaPlayer(new java.io.File(pth));
                             break;
                         case "html":
                             System.out.println("Opening browser");
-                            new WebBrowser(toBeOpened.getRealPath());
+                            new WebBrowser(pth);
                             break;
                     }
                 }
