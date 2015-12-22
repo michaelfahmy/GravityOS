@@ -4,8 +4,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -25,12 +23,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Example of playing all mp3 audio files in a given directory 
- * using a JavaFX MediaView launched from Swing 
- */
+
+
 public class MyMedia {
 
     private File f;
+    private JFrame frame;
     private MediaView mediaView;
 
     public MyMedia(File f){
@@ -40,28 +38,28 @@ public class MyMedia {
 
     private void initAndShowGUI() {
         // This method is invoked on Swing thread
-        JFrame frame = new JFrame("FX");
+        frame = new JFrame("FX");
         final JFXPanel fxPanel = new JFXPanel();
         frame.add(fxPanel);
         frame.setBounds(200, 100, 800, 250);
-        WindowListener exitListener = new WindowAdapter() {
 
+        WindowListener exitListener = new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 mediaView.getMediaPlayer().stop();
                 mediaView.getMediaPlayer().dispose();
-                e.getWindow().dispose();
                 try {
-                    this.finalize();
-                    System.out.println("finalized");
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
+                    e.getWindow().dispose();
+                } catch (Exception ex) {
+                    System.out.println(ex.toString());
                 }
+                frame.getDefaultCloseOperation();
             }
         };
+
+
         frame.addWindowListener(exitListener);
         frame.setVisible(true);
-
         Platform.runLater(() -> initFX(fxPanel));
     }
 
@@ -79,25 +77,20 @@ public class MyMedia {
         public Scene createScene(File f) {
             final StackPane layout = new StackPane();
 
-            //dummy data to check the player status
-            //url = "/media/ahmadz/AhMeDz/SafeZone/Intellij/OSProject/src/storage/Media files/vid.mp4";
+            System.out.println(f.getPath());
 
-            // determine the source directory
-            final File dir = f;
-            System.out.println(dir.getPath());
-
-            System.out.println(dir.isFile() + " " + dir.exists() + " " + dir.getPath().endsWith(".mp3") + " " + dir.getPath().endsWith(".mp4"));
-            if (!dir.isFile() || !dir.exists() ||  !(dir.getPath().endsWith(".mp3") || dir.getPath().endsWith(".mp4"))) {
+            System.out.println(f.isFile() + " " + f.exists() + " " + f.getPath().endsWith(".mp3") + " " + f.getPath().endsWith(".mp4"));
+            if (!f.isFile() || !f.exists() ||  !(f.getPath().endsWith(".mp3") || f.getPath().endsWith(".mp4"))) {
                 System.out.println("8alat keda");
                 System.exit(0);
             }
             // create some media players.
             final List<MediaPlayer> players = new ArrayList<>();
-            players.add(createPlayer(dir.toURI().toString()));
+            players.add(createPlayer(f.toURI().toString()));
 
             // create a view to show the mediaplayers.
             mediaView = new MediaView(players.get(0));
-            final Button skip = new Button("Skip");
+            final Button stop = new Button("Stop");
             final Button play = new Button("Pause");
 
             // play each audio file in turn.
@@ -112,27 +105,23 @@ public class MyMedia {
             }
 
             // allow the user to skip a track.
-            skip.setOnAction(new EventHandler<ActionEvent>() {
-                @Override public void handle(ActionEvent actionEvent) {
-                    MediaPlayer curPlayer = mediaView.getMediaPlayer();
-                    MediaPlayer nextPlayer = players.get((players.indexOf(curPlayer) + 1) % players.size());
-                    mediaView.setMediaPlayer(nextPlayer);
-                    curPlayer.currentTimeProperty().removeListener(progressChangeListener);
-                    curPlayer.stop();
-                    nextPlayer.play();
-                }
+            stop.setOnAction(actionEvent -> {
+                MediaPlayer curPlayer = mediaView.getMediaPlayer();
+                MediaPlayer nextPlayer = players.get((players.indexOf(curPlayer) + 1) % players.size());
+                mediaView.setMediaPlayer(nextPlayer);
+                curPlayer.currentTimeProperty().removeListener(progressChangeListener);
+                curPlayer.stop();
+                nextPlayer.play();
             });
 
             // allow the user to play or pause a track.
-            play.setOnAction(new EventHandler<ActionEvent>() {
-                @Override public void handle(ActionEvent actionEvent) {
-                    if ("Pause".equals(play.getText())) {
-                        mediaView.getMediaPlayer().pause();
-                        play.setText("Play");
-                    } else {
-                        mediaView.getMediaPlayer().play();
-                        play.setText("Pause");
-                    }
+            play.setOnAction(actionEvent -> {
+                if ("Pause".equals(play.getText())) {
+                    mediaView.getMediaPlayer().pause();
+                    play.setText("Play");
+                } else {
+                    mediaView.getMediaPlayer().play();
+                    play.setText("Pause");
                 }
             });
 
@@ -161,7 +150,7 @@ public class MyMedia {
                     VBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(
                             currentlyPlaying,
                             mediaView,
-                            HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(skip, play, progress).build()
+                            HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(stop, play, progress).build()
                     ).build()
             );
             progress.setMaxWidth(Double.MAX_VALUE);
@@ -172,11 +161,7 @@ public class MyMedia {
         /** sets the currently playing label to the label of the new media player and updates the progress monitor. */
         private void setCurrentlyPlaying(final MediaPlayer newPlayer) {
             progress.setProgress(0);
-            progressChangeListener = new ChangeListener<Duration>() {
-                @Override public void changed(ObservableValue<? extends Duration> observableValue, Duration oldValue, Duration newValue) {
-                    progress.setProgress(1.0 * newPlayer.getCurrentTime().toMillis() / newPlayer.getTotalDuration().toMillis());
-                }
-            };
+            progressChangeListener = (observableValue, oldValue, newValue) -> progress.setProgress(1.0 * newPlayer.getCurrentTime().toMillis() / newPlayer.getTotalDuration().toMillis());
             newPlayer.currentTimeProperty().addListener(progressChangeListener);
 
             String source = newPlayer.getMedia().getSource();
@@ -189,11 +174,7 @@ public class MyMedia {
         private MediaPlayer createPlayer(String aMediaSrc) {
             System.out.println("Creating player for: " + aMediaSrc);
             final MediaPlayer player = new MediaPlayer(new Media(aMediaSrc));
-            player.setOnError(new Runnable() {
-                @Override public void run() {
-                    System.out.println("Media error occurred: " + player.getError());
-                }
-            });
+            player.setOnError(() -> System.out.println("Media error occurred: " + player.getError()));
             return player;
         }
     }

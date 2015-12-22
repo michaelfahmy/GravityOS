@@ -1,6 +1,12 @@
 package sfe.os;
 
 import apps.*;
+import javafx.geometry.Insets;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 
 import java.io.*;
 import java.util.LinkedList;
@@ -77,8 +83,10 @@ public class FileSystem {
         this.retrieve();
     }
 
-    public void select(Directory selected) {
+    public void select(Directory selected, Label view) {
         this.selected = selected;
+        if (view != null)
+            view.setBackground(new Background(new BackgroundFill(Color.BLANCHEDALMOND, CornerRadii.EMPTY, Insets.EMPTY)));
     }
 
     public Directory getSelected() {
@@ -129,8 +137,7 @@ public class FileSystem {
                 } else {
                     String pth = toBeOpened.getRealPath();
                     pth = pth.substring(pth.indexOf("storage")).replaceAll("%20"," ");
-                    String tmp = (getClass().getClassLoader().getResource(pth).getPath());
-                    //System.out.println(tmp);
+                    String tmp = getClass().getClassLoader().getResource(pth).getPath();
                     java.io.File f = new java.io.File(tmp.replaceAll("%20"," "));
 
                     switch (((File) toBeOpened).extension) {
@@ -152,11 +159,11 @@ public class FileSystem {
                             break;
                         case "pdf":
                             System.out.println("Opening pdf viewer");
-                            new PDFViewer(toBeOpened.getRealPath());
+                            new PDFViewer(pth);
                             break;
                         case "html":
                             System.out.println("Opening browser");
-                            new WebBrowser(toBeOpened.getRealPath());
+                            new WebBrowser(pth);
                             break;
                     }
                 }
