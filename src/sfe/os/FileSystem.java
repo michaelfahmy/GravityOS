@@ -155,15 +155,11 @@ public class FileSystem {
                             break;
                         case "mp3":
                             System.out.println("Opening music player");
-                            new MyMedia(f);
+                            new FXMediaPlayer(f);
                             break;
                         case "mp4":
                             System.out.println("Opening video player");
-                            new MyMedia(f);
-                            break;
-                        case "pdf":
-                            System.out.println("Opening pdf viewer");
-                            new PDFViewer(pth);
+                            new FXMediaPlayer(f);
                             break;
                         case "html":
                             System.out.println("Opening browser");

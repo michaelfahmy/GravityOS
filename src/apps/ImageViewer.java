@@ -4,10 +4,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class ImageViewer {
@@ -22,22 +23,9 @@ public class ImageViewer {
         stage = new Stage();
         stage.setTitle("Image Viewer");
 
-        Image img = new Image(fileUrl);
-        height = img.getHeight();
-
-        imgView = new ImageView(img);
-        imgView.setPreserveRatio(true);
-
-        ScrollPane scroll = new ScrollPane();
-        scroll.setFitToWidth(true);
-        scroll.setFitToHeight(true);
-        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scroll.setContent(imgView);
-
         BorderPane border = new BorderPane();
         border.setTop(menuBar());
-        border.setCenter(scroll);
+        border.setCenter(viewer(fileUrl));
         border.setBottom(controlsBar());
 
         stage.setScene(new Scene(border));
@@ -46,54 +34,105 @@ public class ImageViewer {
 
     public MenuBar menuBar() {
         MenuBar menuBar = new MenuBar();
+        menuBar.setBackground(new Background(new BackgroundFill(Color.LIGHTGREY, CornerRadii.EMPTY, Insets.EMPTY)));
 
         Menu fileMenu = new Menu("File");
         {
-            MenuItem newFileMenu = new MenuItem("Open...");
-            newFileMenu.setOnAction(event -> { /* open file chooser for image files */ } );
+            MenuItem open = new MenuItem("Open...");
+            open.setOnAction(event -> { /* open file chooser for image files */ } );
             MenuItem close = new MenuItem("Exit");
             close.setOnAction(event -> stage.close());
-            fileMenu.getItems().addAll(newFileMenu, close);
+            fileMenu.getItems().addAll(open, close);
         }
 
         menuBar.getMenus().addAll(fileMenu);
         return menuBar;
     }
 
-    public HBox controlsBar() {
-        HBox hbox = new HBox();
-        hbox.setPadding(new Insets(10, 10, 10, 10));
-        hbox.setSpacing(10);
-        hbox.setAlignment(Pos.CENTER);
+    public ScrollPane viewer(String fileUrl) {
 
-        Button buttonZoomIn = new Button(null, new ImageView(new Image("res/ImageViewerIcons/zoomIn.png")));
-        Button buttonZoomOut = new Button(null, new ImageView(new Image("res/ImageViewerIcons/zoomOut.png")));
-        Button buttonRotateL = new Button(null, new ImageView(new Image("res/ImageViewerIcons/rotateL.png")));
-        Button buttonRotateR = new Button(null, new ImageView(new Image("res/ImageViewerIcons/rotateR.png")));
-        Button fullScreen = new Button("full screen");
+        Image img = new Image(fileUrl);
+        height = img.getHeight();
 
-        fullScreen.setOnAction(event1 -> {
-            stage.setFullScreen(true);
-            stage.setFullScreenExitHint("");
-        });
-        buttonZoomIn.setOnAction(event -> {
+        VBox zoomControls = new VBox();
+        Label buttonZoomIn = new Label(null, new ImageView(new Image("res/ImageViewerIcons/zoomIn.png")));
+        Label buttonZoomOut = new Label(null, new ImageView(new Image("res/ImageViewerIcons/zoomOut.png")));
+        buttonZoomIn.setOpacity(0.3);
+        buttonZoomOut.setOpacity(0.3);
+
+        buttonZoomIn.setOnMouseEntered(event1 -> buttonZoomIn.setOpacity(0.5));
+        buttonZoomIn.setOnMouseExited(event1 -> buttonZoomIn.setOpacity(0.3));
+        buttonZoomOut.setOnMouseEntered(event1 -> buttonZoomOut.setOpacity(0.5));
+        buttonZoomOut.setOnMouseExited(event1 -> buttonZoomOut.setOpacity(0.3));
+
+        buttonZoomIn.setOnMouseClicked(event -> {
             height *= 1.5;
             imgView.setFitHeight(height);
         });
-        buttonZoomOut.setOnAction(event -> {
+        buttonZoomOut.setOnMouseClicked(event -> {
             height /= 1.5;
             imgView.setFitHeight(height);
         });
-        buttonRotateL.setOnAction(event -> {
+
+        zoomControls.getChildren().addAll(buttonZoomIn, buttonZoomOut);
+        zoomControls.setPickOnBounds(true);
+        zoomControls.setAlignment(Pos.TOP_LEFT);
+        zoomControls.setPadding(new Insets(10));
+
+        imgView = new ImageView(img);
+        imgView.setPreserveRatio(true);
+        imgView.setPickOnBounds(true);
+        imgView.autosize();
+
+        StackPane pane = new StackPane();
+        pane.getChildren().addAll(imgView, zoomControls);
+        pane.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        ScrollPane scroll = new ScrollPane();
+        scroll.setFitToWidth(true);
+        scroll.setFitToHeight(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scroll.setContent(pane);
+
+        return scroll;
+    }
+
+    public HBox controlsBar() {
+        HBox hbox = new HBox();
+        hbox.setPadding(new Insets(3, 10, 3, 10));
+        hbox.setSpacing(10);
+        hbox.setAlignment(Pos.CENTER);
+        hbox.setBackground(new Background(new BackgroundFill(Color.LIGHTGREY, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        Label buttonRotateL = new Label(null, new ImageView(new Image("res/ImageViewerIcons/rotateL.png")));
+        Label buttonRotateR = new Label(null, new ImageView(new Image("res/ImageViewerIcons/rotateR.png")));
+        Label fullScreen = new Label(null, new ImageView(new Image("res/ImageViewerIcons/fullScreen.png")));
+
+        fullScreen.setOnMouseEntered(event2 -> fullScreen.setEffect(new Glow(3)));
+        fullScreen.setOnMouseExited(event2 -> fullScreen.setEffect(null));
+
+        buttonRotateR.setOnMouseEntered(event2 -> buttonRotateR.setEffect(new Glow(5)));
+        buttonRotateR.setOnMouseExited(event2 -> buttonRotateR.setEffect(null));
+
+        buttonRotateL.setOnMouseEntered(event2 -> buttonRotateL.setEffect(new Glow(5)));
+        buttonRotateL.setOnMouseExited(event2 -> buttonRotateL.setEffect(null));
+
+        fullScreen.setOnMouseClicked(event1 -> {
+            stage.setFullScreen(true);
+            stage.setFullScreenExitHint("");
+        });
+
+        buttonRotateR.setOnMouseClicked(event -> {
             imgView.setRotate(angles[currentAngle]);
             currentAngle = (currentAngle + 1) % 4;
         });
-        buttonRotateR.setOnAction(event -> {
+        buttonRotateL.setOnMouseClicked(event -> {
             currentAngle = currentAngle == 0 ? 3 : currentAngle - 1;
             imgView.setRotate(angles[currentAngle]);
         });
 
-        hbox.getChildren().addAll(buttonRotateL, buttonZoomIn, fullScreen,buttonZoomOut, buttonRotateR);
+        hbox.getChildren().addAll(buttonRotateL, fullScreen, buttonRotateR);
 
         return hbox;
     }
