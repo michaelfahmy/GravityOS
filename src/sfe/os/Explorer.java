@@ -1,4 +1,5 @@
 package sfe.os;
+import directory.*;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -12,8 +13,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-
 import java.util.Optional;
+
 
 public class Explorer {
 
@@ -105,7 +106,6 @@ public class Explorer {
     }
 
     private void refresh() {
-
         TilePane tiles = new TilePane();
         tiles.setPrefColumns(8);
         tiles.setHgap(25);
@@ -113,9 +113,10 @@ public class Explorer {
         tiles.setPadding(new Insets(20));
         tiles.setOnMouseClicked(this::tilePaneRightClickContextMenu);
         tiles.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        explorer.setBottom(new Label(fileSystem.getCurrentFolder().getPath()));
         populateTiles(tiles);
-
         explorer.setCenter(tiles);
+
     }
 
     private void populateTiles(TilePane tiles) {
@@ -178,7 +179,7 @@ public class Explorer {
             view.setGraphic(new ImageView("res/folder.png"));
         } else {
             File file = (File) dir;
-            switch (file.extension) {
+            switch (file.getExtension()) {
                 case "txt":
                     view.setGraphic(new ImageView("res/txt.png"));
                     break;
@@ -313,8 +314,8 @@ public class Explorer {
                     break;
             }
             File f = fileSystem.newFile(name, ext, permission);
-            if (!type.equals("Text") && !type.equals("Website"))
-                new sfe.os.FileChooser(f);
+//            if (!type.equals("Text") && !type.equals("Website"))
+//                new sfe.os.FileChooser(f);
         });
         refresh();
     }

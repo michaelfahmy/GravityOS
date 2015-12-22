@@ -1,5 +1,6 @@
 package apps;
 
+import directory.*;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -7,20 +8,20 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.controlsfx.dialog.FontSelectorDialog;
-
 import javax.swing.*;
 import java.io.*;
-import java.util.Scanner;
 
 
 public class TextEditor {
 
     private Stage stage;
-
-    public TextEditor() {
+    private directory.File chosenFile;
+    static private int cnt = 0;
+    public TextEditor(directory.File chosenFile) {
+        this.chosenFile = chosenFile;
+        ++cnt;
         stage = new Stage();
         stage.setTitle("Text Editor");
         stage.setScene(new nota().not());
@@ -42,45 +43,45 @@ public class TextEditor {
 
         Menu helpMenu = new Menu("Help");
         MenuItem aboutItem = new MenuItem("About Editor");
-
-        TextArea txt = new TextArea();
-
+        TextArea txt;
+        public nota() {
+            this.txt = new TextArea();
+            initialize();
+        }
+        void initialize() {
+            if (chosenFile.getRealPath() != null) {
+                try {
+                    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(chosenFile.getRealPath())));
+                    do {
+                        txt.setText(txt.getText() + br.readLine() + "\n");
+                    } while (br.ready());
+                } catch (IOException e) {
+                    txt.setText("");
+                }
+            }
+        }
         public Scene not() {
             BorderPane border = new BorderPane();
             newItem.setOnAction(t -> txt.setText(""));
             openItem.setOnAction(t -> {
-                FileChooser choice = new FileChooser();
-                choice.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("txt Files", "txt"));
-                File f = choice.showOpenDialog(null);
-                if (f != null) {
-                    txt.setText("");
-                    try {
-                        Scanner scan = new Scanner(new FileReader(f));
-                        while (scan.hasNext())
-                            txt.appendText(scan.nextLine());
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-                } else {
-                    System.out.println("File access cancelled by user.");
-                }
+                sfe.os.FileChooser fileChooser = new sfe.os.FileChooser(null, "open");
+                stage.close();
             });
             saveItem.setOnAction(t -> {
                 if (!txt.getText().isEmpty()) {
-                    FileChooser choice = new FileChooser();
-                    choice.setTitle("Specify a file to save");
-                    choice.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("txt Files", "txt"));
-                    File f = choice.showSaveDialog(null);
-                    if (f != null) {
-                        BufferedWriter out;
-                        try {
-                            out = new BufferedWriter(new FileWriter(f));
-                            out.write(txt.getText());
-                            out.close();
-                        } catch (IOException e) {
-                            System.out.println(e.getMessage());
-                        }
-                        System.out.println("Save as file: " + f);
+                    OutputStream file = null;
+                    try {
+                        file = new FileOutputStream(chosenFile.getRealPath() == null ? "src/storage/Text files/txtFile"+cnt+".txt": chosenFile.getRealPath());
+                        file.write(txt.getText().getBytes());
+                        file.close();
+                    } catch (IOException e) {
+                        System.out.print("File Not Found\n");
+                    }
+                    if(chosenFile.getRealPath() == null) {
+                        chosenFile.setRealPath("src/storage/Text files/txtFile" + cnt + ".txt");
+                    }
+                    if(chosenFile == null) {
+                        sfe.os.FileChooser fileChooser = new sfe.os.FileChooser("", "save");
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "text is empty", "Error", JOptionPane.ERROR_MESSAGE);
