@@ -7,10 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -93,6 +90,7 @@ public class WebBrowser {
         Button reloadButton;
         ComboBox webHistoryComboBox;
         TextField url;
+        ProgressIndicator progress = new ProgressIndicator();
 
         public WebViewPane() {
             url = new TextField();
@@ -197,13 +195,15 @@ public class WebBrowser {
                     }
                 }
             });
-
+            progress.setScaleX(0.5);
+            progress.setScaleY(0.5);
+            progress.visibleProperty().bind(browser.getEngine().getLoadWorker().runningProperty());
             BorderPane border = new BorderPane();
             HBox topBar = new HBox();
             topBar.setAlignment(Pos.CENTER);
             topBar.setSpacing(10);
             topBar.setPadding(new Insets(10, 10, 10, 10));
-            topBar.getChildren().addAll(reloadButton, url, goButton, backButton, forwardButton, webHistoryComboBox);
+            topBar.getChildren().addAll(progress, reloadButton, url, goButton, backButton, forwardButton, webHistoryComboBox);
 
             border.setTop(topBar);
             border.setCenter(browser);

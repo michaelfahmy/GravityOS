@@ -136,9 +136,13 @@ public class FileSystem {
                     this.currentFolder = (Folder) toBeOpened;
                 } else {
                     String pth = toBeOpened.getRealPath();
-                    pth = pth.substring(pth.indexOf("storage")).replaceAll("%20"," ");
-                    String tmp = getClass().getClassLoader().getResource(pth).getPath();
-                    java.io.File f = new java.io.File(tmp.replaceAll("%20"," "));
+                    String tmp;
+                    java.io.File f = null;
+                    if (!((File) toBeOpened).extension.equals("txt") && !((File) toBeOpened).extension.equals("html")) {
+                        pth = pth.substring(pth.indexOf("storage")).replaceAll("%20"," ");
+                        tmp = getClass().getClassLoader().getResource(pth).getPath();
+                        f = new java.io.File(tmp.replaceAll("%20", " "));
+                    }
 
                     switch (((File) toBeOpened).extension) {
                         case "txt":

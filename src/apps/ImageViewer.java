@@ -3,8 +3,7 @@ package apps;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -16,10 +15,11 @@ public class ImageViewer {
     private int currentAngle = 0;
     private double height;
 
+    Stage stage;
     ImageView imgView = new ImageView();
 
     public ImageViewer(String fileUrl) {
-        Stage stage = new Stage();
+        stage = new Stage();
         stage.setTitle("Image Viewer");
 
         Image img = new Image(fileUrl);
@@ -36,14 +36,31 @@ public class ImageViewer {
         scroll.setContent(imgView);
 
         BorderPane border = new BorderPane();
+        border.setTop(menuBar());
         border.setCenter(scroll);
-        border.setBottom(addHBox());
+        border.setBottom(controlsBar());
 
         stage.setScene(new Scene(border));
         stage.show();
     }
 
-    public HBox addHBox() {
+    public MenuBar menuBar() {
+        MenuBar menuBar = new MenuBar();
+
+        Menu fileMenu = new Menu("File");
+        {
+            MenuItem newFileMenu = new MenuItem("Open...");
+            newFileMenu.setOnAction(event -> { /* open file chooser for image files */ } );
+            MenuItem close = new MenuItem("Exit");
+            close.setOnAction(event -> stage.close());
+            fileMenu.getItems().addAll(newFileMenu, close);
+        }
+
+        menuBar.getMenus().addAll(fileMenu);
+        return menuBar;
+    }
+
+    public HBox controlsBar() {
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(10, 10, 10, 10));
         hbox.setSpacing(10);
@@ -53,7 +70,12 @@ public class ImageViewer {
         Button buttonZoomOut = new Button(null, new ImageView(new Image("res/ImageViewerIcons/zoomOut.png")));
         Button buttonRotateL = new Button(null, new ImageView(new Image("res/ImageViewerIcons/rotateL.png")));
         Button buttonRotateR = new Button(null, new ImageView(new Image("res/ImageViewerIcons/rotateR.png")));
+        Button fullScreen = new Button("full screen");
 
+        fullScreen.setOnAction(event1 -> {
+            stage.setFullScreen(true);
+            stage.setFullScreenExitHint("");
+        });
         buttonZoomIn.setOnAction(event -> {
             height *= 1.5;
             imgView.setFitHeight(height);
@@ -71,7 +93,7 @@ public class ImageViewer {
             imgView.setRotate(angles[currentAngle]);
         });
 
-        hbox.getChildren().addAll(buttonZoomIn,buttonZoomOut, buttonRotateL,buttonRotateR);
+        hbox.getChildren().addAll(buttonRotateL, buttonZoomIn, fullScreen,buttonZoomOut, buttonRotateR);
 
         return hbox;
     }
