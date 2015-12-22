@@ -3,17 +3,20 @@ package sfe.os;
 import apps.*;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import java.io.*;
+import java.util.LinkedList;
+
 import directory.*;
 import directory.File;
 
 
 public class FileSystem {
-
+    public static LinkedList<TextEditor> txtEditorList;
     private static final String COPY_PROCESS = "copy";
     private static final String CUT_PROCESS = "cut";
     private Folder root, currentFolder;
@@ -25,8 +28,9 @@ public class FileSystem {
         currentFolder = root;
         Folder storage = newFolder("home");
         storage.setHidden();
-        this.seeds(storage, "src/storage");
+        this.seeds(storage, "src/res");
         this.retrieve();
+        txtEditorList = new LinkedList<>();
     }
     public Folder getRoot() {
         return this.root;
@@ -86,7 +90,16 @@ public class FileSystem {
                     switch (((File) toBeOpened).getExtension()) {
                         case "txt":
                             System.out.println("Opening text editor");
-                            new TextEditor((File) toBeOpened);
+                            boolean opened = false;
+                            for(TextEditor txtE: txtEditorList) {
+                                if((File) toBeOpened == txtE.getChosenFile()) {
+                                    opened = true;
+                                }
+                            }
+                            if(!opened)
+                                txtEditorList.add(new TextEditor((File) toBeOpened));
+                            else
+                                System.out.print("maft7oosh tany\n");
                             break;
                         case "jpg":
                             System.out.println("Opening image viewer");

@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 
 public class FileChooser {
 
-    private FileSystem fileSystem;
+    public FileSystem fileSystem;
     private Stage stage;
     private BorderPane explorer;
     private String selectedFilePath;
