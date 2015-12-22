@@ -16,9 +16,11 @@ import javafx.scene.paint.Color;
 
 import java.io.*;
 
+import java.util.LinkedList;
+
 
 public class FileSystem {
-
+    public static LinkedList<Memo> txtEditorList;
     private static final String COPY_PROCESS = "copy";
     private static final String CUT_PROCESS = "cut";
     private Folder root, currentFolder;
@@ -30,8 +32,9 @@ public class FileSystem {
         currentFolder = root;
         Folder storage = newFolder("home");
         storage.setHidden();
-        this.seeds(storage, "src/storage");
+        this.seeds(storage, "src/res");
         this.retrieve();
+        txtEditorList = new LinkedList<>();
     }
     public Folder getRoot() {
         return this.root;
@@ -99,7 +102,16 @@ public class FileSystem {
                     switch (((File) toBeOpened).getExtension()) {
                         case "txt":
                             System.out.println("Opening text editor");
-                            new Memo((File) toBeOpened);
+                            boolean opened = false;
+                            for(Memo txtE: txtEditorList) {
+                                if(toBeOpened == txtE.getChosenFile()) {
+                                    opened = true;
+                                }
+                            }
+                            if(!opened)
+                                txtEditorList.add(new Memo((File) toBeOpened));
+                            else
+                                System.out.print("maft7oosh tany\n");
                             break;
                         case "jpg":
                             System.out.println("Opening image viewer");

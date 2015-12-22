@@ -1,5 +1,7 @@
 package apps;
 
+
+import directory.File;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -9,6 +11,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.controlsfx.dialog.FontSelectorDialog;
+import sfe.os.*;
+
 import javax.swing.*;
 import java.io.*;
 
@@ -19,6 +23,7 @@ public class Memo {
     private directory.File chosenFile = null;
     static private int cnt = 0;
 
+    sfe.os.FileChooser fileChooser;
     public Memo(directory.File chosenFile) {
         this.chosenFile = chosenFile != null ? chosenFile : null;
         ++cnt;
@@ -28,8 +33,12 @@ public class Memo {
         stage.setResizable(false);
         stage.show();
     }
-
+    public File getChosenFile() {
+        return this.chosenFile;
+    }
     class nota {
+        // fileChooser.fileSystem.txtEditorList.remove(chosenFile);
+
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("File");
         MenuItem newItem = new MenuItem("New");
@@ -63,35 +72,46 @@ public class Memo {
             }
         }
 
+
+        void closeIt() {
+            for(Memo cur: FileSystem.txtEditorList) {
+                if(cur.chosenFile == chosenFile) {
+                    FileSystem.txtEditorList.remove(cur);
+                    break;
+                }
+            }
+        }
+
         public Scene not() {
             BorderPane border = new BorderPane();
             newItem.setOnAction(t -> txt.setText(""));
             openItem.setOnAction(t -> {
-                sfe.os.FileChooser fileChooser = new sfe.os.FileChooser(null, "open");
+                fileChooser = new sfe.os.FileChooser(null, "open");
                 stage.close();
             });
             saveItem.setOnAction(t -> {
                 if (!txt.getText().isEmpty()) {
                     OutputStream file = null;
                     try {
-                        file = new FileOutputStream(chosenFile.getRealPath() == null ? "src/storage/Text files/txtFile"+cnt+".txt": chosenFile.getRealPath());
+                        file = new FileOutputStream(chosenFile.getRealPath() == null ? "src/res/Text files/txtFile"+cnt+".txt": chosenFile.getRealPath());
                         file.write(txt.getText().getBytes());
                         file.close();
                     } catch (IOException e) {
+                        e.printStackTrace();
                         System.out.print("File Not Found\n");
                     }
                     if(chosenFile.getRealPath() == null) {
-                        chosenFile.setRealPath("src/storage/Text files/txtFile" + cnt + ".txt");
+                        chosenFile.setRealPath("src/res/Text files/txtFile" + cnt + ".txt");
                     }
                     if(chosenFile == null) {
-                        sfe.os.FileChooser fileChooser = new sfe.os.FileChooser("", "save");
+                        fileChooser = new sfe.os.FileChooser("", "save");
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "text is empty", "Error", JOptionPane.ERROR_MESSAGE);
                 }
 
             });
-            exitItem.setOnAction(t -> stage.close());
+            exitItem.setOnAction(t -> { closeIt(); stage.close(); });
 
             fontItem.setOnAction(t -> {
                 Font f = txt.getFont();
