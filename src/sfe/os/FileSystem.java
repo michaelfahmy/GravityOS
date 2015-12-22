@@ -1,4 +1,5 @@
 package sfe.os;
+
 import apps.*;
 
 import java.io.*;
@@ -126,6 +127,12 @@ public class FileSystem {
                 if (toBeOpened instanceof Folder) {
                     this.currentFolder = (Folder) toBeOpened;
                 } else {
+                    String pth = toBeOpened.getRealPath();
+                    pth = pth.substring(pth.indexOf("storage")).replaceAll("%20"," ");
+                    String tmp = (getClass().getClassLoader().getResource(pth).getPath());
+                    //System.out.println(tmp);
+                    java.io.File f = new java.io.File(tmp.replaceAll("%20"," "));
+
                     switch (((File) toBeOpened).extension) {
                         case "txt":
                             System.out.println("Opening text editor");
@@ -133,15 +140,15 @@ public class FileSystem {
                             break;
                         case "jpg":
                             System.out.println("Opening image viewer");
-                            new ImageViewer(toBeOpened.getRealPath());
+                            new ImageViewer(pth);
                             break;
                         case "mp3":
                             System.out.println("Opening music player");
-                            new MyMedia(toBeOpened.getRealPath());
+                            new MyMedia(f);
                             break;
                         case "mp4":
                             System.out.println("Opening video player");
-                            new MyMedia(toBeOpened.getRealPath());
+                            new MyMedia(f);
                             break;
                         case "pdf":
                             System.out.println("Opening pdf viewer");

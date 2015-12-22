@@ -30,12 +30,12 @@ import java.util.List;
  */
 public class MyMedia {
 
-    private String url;
+    private File f;
     private MediaView mediaView;
 
-    public MyMedia(String url){
+    public MyMedia(File f){
         initAndShowGUI();
-        this.url = url;
+        this.f = f;
     }
 
     private void initAndShowGUI() {
@@ -48,10 +48,12 @@ public class MyMedia {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                if (mediaView.getMediaPlayer().getStatus().equals(MediaPlayer.Status.PLAYING))
-                    mediaView.getMediaPlayer().stop();
+                mediaView.getMediaPlayer().stop();
+                mediaView.getMediaPlayer().dispose();
+                e.getWindow().dispose();
                 try {
                     this.finalize();
+                    System.out.println("finalized");
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -60,16 +62,12 @@ public class MyMedia {
         frame.addWindowListener(exitListener);
         frame.setVisible(true);
 
-        Platform.runLater(new Runnable() {
-            @Override public void run() {
-                initFX(fxPanel);
-            }
-        });
+        Platform.runLater(() -> initFX(fxPanel));
     }
 
     private void initFX(JFXPanel fxPanel) {
         // This method is invoked on JavaFX thread
-        Scene scene = new SceneGenerator2().createScene(url);
+        Scene scene = new SceneGenerator2().createScene(f);
         fxPanel.setScene(scene);
     }
 
@@ -78,18 +76,17 @@ public class MyMedia {
         final ProgressBar progress = new ProgressBar();
         private ChangeListener<Duration> progressChangeListener;
 
-        public Scene createScene(String url) {
+        public Scene createScene(File f) {
             final StackPane layout = new StackPane();
 
             //dummy data to check the player status
-            // url = "/media/ahmadz/AhMeDz/SafeZone/Intellij/OSProject/src/res/files/vid.mp4";
-            // url = "/home/michael/song.mp3";
+            //url = "/media/ahmadz/AhMeDz/SafeZone/Intellij/OSProject/src/storage/Media files/vid.mp4";
 
             // determine the source directory
-            final File dir = new File(url.replace("file:", ""));
-            System.out.println(dir);
+            final File dir = f;
+            System.out.println(dir.getPath());
 
-            //System.out.println(!dir.isFile() + " " + !dir.exists() + " " + !dir.getPath().endsWith(".mp3") + " " + !dir.getPath().endsWith(".mp4"));
+            System.out.println(dir.isFile() + " " + dir.exists() + " " + dir.getPath().endsWith(".mp3") + " " + dir.getPath().endsWith(".mp4"));
             if (!dir.isFile() || !dir.exists() ||  !(dir.getPath().endsWith(".mp3") || dir.getPath().endsWith(".mp4"))) {
                 System.out.println("8alat keda");
                 System.exit(0);
@@ -117,7 +114,7 @@ public class MyMedia {
             // allow the user to skip a track.
             skip.setOnAction(new EventHandler<ActionEvent>() {
                 @Override public void handle(ActionEvent actionEvent) {
-                    final MediaPlayer curPlayer = mediaView.getMediaPlayer();
+                    MediaPlayer curPlayer = mediaView.getMediaPlayer();
                     MediaPlayer nextPlayer = players.get((players.indexOf(curPlayer) + 1) % players.size());
                     mediaView.setMediaPlayer(nextPlayer);
                     curPlayer.currentTimeProperty().removeListener(progressChangeListener);
