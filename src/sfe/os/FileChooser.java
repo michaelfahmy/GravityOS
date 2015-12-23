@@ -27,6 +27,7 @@ public class FileChooser {
     public FileChooser(String realPath, String operation) {
         this.operation = operation;
         this.realPath = realPath;
+        Main.fileSystem.goRoot();
         InitializeFileChooser();
     }
 
@@ -40,23 +41,23 @@ public class FileChooser {
         if(!fileName.getText().isEmpty()) { action.setDisable(false); }
         action.setOnAction(event -> {
             if(operation.equals(SAVE)) {
-                directory.File fle = new directory.File(fileName.getText().trim(), fileTypes.getValue(), Explorer.fileSystem.getCurrentFolder().getPath() + "/" + fileName, Explorer.fileSystem.getCurrentFolder(), fileTypes.getValue().equals("txt") ? "r/w" : "r");
+                directory.File fle = new directory.File(fileName.getText().trim(), fileTypes.getValue(), Main.fileSystem.getCurrentFolder().getPath() + "/" + fileName, Main.fileSystem.getCurrentFolder(), fileTypes.getValue().equals("txt") ? "r/w" : "r");
                 fle.setRealPath(realPath);
                 Memo.chosenFile = fle;
-                Explorer.fileSystem.getCurrentFolder().getChildren().add(fle);
-                Explorer.fileSystem.store();
+                Main.fileSystem.getCurrentFolder().getChildren().add(fle);
+                Main.fileSystem.store();
             }else {
-                Explorer.fileSystem.open(Explorer.fileSystem.getSelected());
+                Main.fileSystem.open(Main.fileSystem.getSelected());
             }
             stage.close();
         });
         back = new Button(null, new ImageView("res/ExplorerIcons/icon-back.png"));
         back.setDisable(true);
         back.setOnAction(event -> {
-            Explorer.fileSystem.back();
+            Main.fileSystem.back();
             refresh();
             back.setDisable(false);
-            if(Explorer.fileSystem.getCurrentFolder() == Explorer.fileSystem.getRoot()) {
+            if(Main.fileSystem.getCurrentFolder() == Main.fileSystem.getRoot()) {
                 back.setDisable(true);
             }
         });
@@ -92,9 +93,9 @@ public class FileChooser {
     }
 
     private void populateTiles(TilePane tiles) {
-        Label view[] = new Label[Explorer.fileSystem.getCurrentFolder().getChildren().size()];
+        Label view[] = new Label[Main.fileSystem.getCurrentFolder().getChildren().size()];
         for (int i = 0; i < view.length; i++) {
-            directory.Directory dir = Explorer.fileSystem.getCurrentFolder().getChildren().get(i);
+            directory.Directory dir = Main.fileSystem.getCurrentFolder().getChildren().get(i);
             view[i] = new Label(dir.getName());
             view[i].setContentDisplay(ContentDisplay.TOP);
             view[i].setPadding(new Insets(0, 5, 0, 5));
@@ -104,7 +105,7 @@ public class FileChooser {
             view[i].setOnMouseClicked(event -> {
                 if(event.getButton().equals(MouseButton.PRIMARY)) {
                     if(event.getClickCount() == 2) {
-                        Explorer.fileSystem.open(dir);
+                        Main.fileSystem.open(dir);
                         if (dir instanceof directory.Folder) {
                             back.setDisable(false);
                             refresh();
