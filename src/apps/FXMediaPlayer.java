@@ -89,7 +89,7 @@ public class FXMediaPlayer {
     }
 
     private MediaView mediaScene() {
-        mediaView = new MediaView(new MediaPlayer(new Media(f.toURI().toString())));
+        mediaView = new MediaView(new MediaPlayer(new Media(f.getPath().replace(" ","%20"))));
         mediaView.getMediaPlayer().setOnError(() -> System.out.println("Media error occurred: " + mediaView.getMediaPlayer().getError()));
         mediaView.getMediaPlayer().play();
         setCurrentlyPlaying(mediaView.getMediaPlayer());
