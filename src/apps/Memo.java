@@ -24,6 +24,14 @@ public class Memo {
     static private int cnt = 0;
 
     sfe.os.FileChooser fileChooser;
+    void closeIt() {
+        for(Memo cur: FileSystem.txtEditorList) {
+            if(cur.chosenFile == chosenFile) {
+                FileSystem.txtEditorList.remove(cur);
+                break;
+            }
+        }
+    }
     public Memo(directory.File chosenFile) {
         this.chosenFile = chosenFile;
         ++cnt;
@@ -31,12 +39,12 @@ public class Memo {
         stage.setTitle("Memo");
         stage.setScene(new nota().not());
         stage.show();
+        stage.setOnCloseRequest(event -> { closeIt(); stage.close(); });
     }
     public File getChosenFile() {
         return this.chosenFile;
     }
     class nota {
-        // fileChooser.fileSystem.txtEditorList.remove(chosenFile);
 
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("File");
@@ -67,16 +75,6 @@ public class Memo {
                     } while (br.ready());
                 } catch (IOException e) {
                     txt.setText("");
-                }
-            }
-        }
-
-
-        void closeIt() {
-            for(Memo cur: FileSystem.txtEditorList) {
-                if(cur.chosenFile == chosenFile) {
-                    FileSystem.txtEditorList.remove(cur);
-                    break;
                 }
             }
         }
