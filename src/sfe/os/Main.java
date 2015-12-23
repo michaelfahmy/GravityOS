@@ -193,7 +193,7 @@ public class Main extends Application {
         box.setOnMouseClicked(event -> {
             if (Explorer.fileSystem != null)
                 Explorer.fileSystem.store();
-            mainStage.close();
+            System.exit(0);
         });
         box.setBackground(new Background(new BackgroundFill(Color.web("#000000", 0.2), new CornerRadii(5), new Insets(5, 5, 5, 5))));
         box.setPadding(new Insets(5, 5, 5, 5));

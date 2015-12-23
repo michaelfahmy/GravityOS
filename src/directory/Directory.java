@@ -7,7 +7,7 @@ public class Directory implements Serializable {
     private String name, path;
     public String realPath;
     private Folder parent;
-    boolean isHidden = false;
+    private boolean isHidden = false;
     public Directory(String name, String path, Folder parent) {
         this.name = name;
         this.path = path;

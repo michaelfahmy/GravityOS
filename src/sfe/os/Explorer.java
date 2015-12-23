@@ -167,7 +167,7 @@ public class Explorer {
                 currView.setScaleX(1);
                 currView.setScaleY(1);
             });
-            if(!dir.isHidden()) { tiles.getChildren().add(view[i]); }
+            { tiles.getChildren().add(view[i]); }
         }
     }
 
