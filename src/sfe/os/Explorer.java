@@ -31,6 +31,7 @@ public class Explorer {
         stage.setTitle("Explorer");
         stage.setHeight(600);
         stage.setWidth(850);
+        stage.setOnCloseRequest(event -> onClose());
         back = new Button(null, new ImageView("res/ExplorerIcons/icon-back.png"));
         back.setDisable(true);
         initRootLayout();
@@ -39,6 +40,13 @@ public class Explorer {
         stage.setScene(new Scene(explorer));
         stage.show();
     }
+
+
+    private void onClose(){
+        Main.fileSystem.store();
+        stage.close();
+    }
+
 
     private void initRootLayout() {
         explorer = new BorderPane();
@@ -52,7 +60,7 @@ public class Explorer {
             MenuItem newFileMenu = new MenuItem("New File");
             newFileMenu.setOnAction(event -> newFileDialog());
             MenuItem close = new MenuItem("Close");
-            close.setOnAction(event ->  { Main.fileSystem.store(); stage.close(); });
+            close.setOnAction(event ->  onClose());
             fileMenu.getItems().addAll(newFileMenu, close);
         }
 
