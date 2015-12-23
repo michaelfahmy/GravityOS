@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import sfe.os.FileChooser;
 
 public class ImageViewer {
     private double angles[] = {90, 180, 270, 360};
@@ -39,7 +40,7 @@ public class ImageViewer {
         Menu fileMenu = new Menu("File");
         {
             MenuItem open = new MenuItem("Open...");
-            open.setOnAction(event -> { /* open file chooser for image files */ } );
+            open.setOnAction(event -> { new FileChooser("jpg", "", "open"); stage.close(); } );
             MenuItem close = new MenuItem("Exit");
             close.setOnAction(event -> stage.close());
             fileMenu.getItems().addAll(open, close);
