@@ -27,8 +27,8 @@ public class FXMediaPlayer {
 
     private Stage stage;
     private MediaView mediaView;
-    private Label currentlyPlaying;
-    private ProgressBar progress;
+    private Label currentlyPlaying = new Label();
+    private ProgressBar progress = new ProgressBar();
     private ChangeListener<Duration> progressChangeListener;
     boolean playing = false;
     private File f = null;
