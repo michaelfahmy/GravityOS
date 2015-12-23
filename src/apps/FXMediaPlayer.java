@@ -77,7 +77,7 @@ public class FXMediaPlayer {
         Menu fileMenu = new Menu("File");
         MenuItem open = new MenuItem("Open...");
         open.setOnAction(event -> {
-            new FileChooser("", "open");
+            new FileChooser("mp3", "", "open");
             stage.close();
         } );
         MenuItem close = new MenuItem("Exit");

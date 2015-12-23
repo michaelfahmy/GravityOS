@@ -18,15 +18,16 @@ public class FileChooser {
     private BorderPane explorer;
     private String selectedFilePath;
     private Button back, action;
-    private String SAVE = "save", OPEN = "open", operation = SAVE, realPath;
+    private String SAVE = "save", OPEN = "open", operation = SAVE, realPath, fileExtension;
     TextField fileName = new TextField();
     ComboBox<String> fileTypes;
     VBox vBox;
     HBox hBox;
 
-    public FileChooser(String realPath, String operation) {
+    public FileChooser(String fileExtension, String realPath, String operation) {
         this.operation = operation;
         this.realPath = realPath;
+        this.fileExtension = fileExtension;
         Main.fileSystem.goRoot();
         InitializeFileChooser();
     }
@@ -125,7 +126,8 @@ public class FileChooser {
                 currView.setScaleX(1);
                 currView.setScaleY(1);
             });
-            tiles.getChildren().add(view[i]);
+            if(dir instanceof Folder || (((File) dir).getExtension().equals(this.fileExtension) || (this.fileExtension.equals("mp3") && ((File) dir).getExtension().equals("mp4"))))
+                tiles.getChildren().add(view[i]);
         }
     }
 
