@@ -83,7 +83,7 @@ public class Memo {
             BorderPane border = new BorderPane();
             newItem.setOnAction(t -> txt.setText(""));
             openItem.setOnAction(t -> {
-                fileChooser = new sfe.os.FileChooser(null, "open");
+                fileChooser = new sfe.os.FileChooser("txt", null, "open");
                 stage.close();
             });
             saveItem.setOnAction(t -> {
@@ -101,7 +101,7 @@ public class Memo {
                             file = new FileOutputStream("src/res/Text files/txtFile" + cnt + ".txt");
                             file.write(txt.getText().getBytes());
                             file.close();
-                            fileChooser = new FileChooser("src/res/Text files/txtFile" + cnt +".txt", "save");
+                            fileChooser = new FileChooser("txt", "src/res/Text files/txtFile" + cnt +".txt", "save");
                         } catch (IOException e) { /*do nothing.. */ }
                     }
                 } else {
