@@ -32,7 +32,7 @@ public class FileSystem {
         currentFolder = root;
         Folder storage = newFolder("home");
 //        storage.setHidden();
-        this.seeds(storage, "src/res");
+        this.seeds(storage, "src/storage");
         this.retrieve();
         txtEditorList = new LinkedList<>();
     }
