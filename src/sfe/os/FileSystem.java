@@ -39,7 +39,7 @@ public class FileSystem {
     public Folder getRoot() {
         return this.root;
     }
-
+    void goRoot() { this.currentFolder = root;  }
     public void select(Directory selected, Label view) {
         this.selected = selected;
         if (view != null)

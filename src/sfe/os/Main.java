@@ -27,7 +27,7 @@ import java.util.Calendar;
 public class Main extends Application {
 
     Stage mainStage;
-
+    public static FileSystem fileSystem;
     public static void main(String[] args) {
         launch(args);
     }
@@ -39,6 +39,7 @@ public class Main extends Application {
         primaryStage.setFullScreen(true);
         primaryStage.setFullScreenExitHint("");
         primaryStage.setScene(desktopScene());
+        fileSystem = new FileSystem();
         primaryStage.show();
     }
 
@@ -191,8 +192,7 @@ public class Main extends Application {
         box.setOnMouseEntered(event -> turnOff.setEffect(new Glow(0.5)));
         box.setOnMouseExited(event -> turnOff.setEffect(null));
         box.setOnMouseClicked(event -> {
-            if (Explorer.fileSystem != null)
-                Explorer.fileSystem.store();
+            fileSystem.store();
             System.exit(0);
         });
         box.setBackground(new Background(new BackgroundFill(Color.web("#000000", 0.2), new CornerRadii(5), new Insets(5, 5, 5, 5))));
