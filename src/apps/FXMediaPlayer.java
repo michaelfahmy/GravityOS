@@ -19,6 +19,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import sfe.os.FileChooser;
 
 import java.io.File;
 
@@ -75,7 +76,10 @@ public class FXMediaPlayer {
 
         Menu fileMenu = new Menu("File");
         MenuItem open = new MenuItem("Open...");
-        open.setOnAction(event -> { /* open file chooser for image files */ } );
+        open.setOnAction(event -> {
+            new FileChooser("", "open");
+            stage.close();
+        } );
         MenuItem close = new MenuItem("Exit");
         close.setOnAction(event -> stage.close());
         fileMenu.getItems().addAll(open, close);

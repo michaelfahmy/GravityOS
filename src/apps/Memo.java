@@ -20,12 +20,12 @@ import java.io.*;
 public class Memo {
 
     private Stage stage;
-    private directory.File chosenFile = null;
+    public static directory.File chosenFile = null;
     static private int cnt = 0;
 
     sfe.os.FileChooser fileChooser;
     public Memo(directory.File chosenFile) {
-        this.chosenFile = chosenFile != null ? chosenFile : null;
+        this.chosenFile = chosenFile;
         ++cnt;
         stage = new Stage();
         stage.setTitle("Memo");
@@ -91,19 +91,20 @@ public class Memo {
             saveItem.setOnAction(t -> {
                 if (!txt.getText().isEmpty()) {
                     OutputStream file = null;
-                    try {
-                        file = new FileOutputStream(chosenFile.getRealPath() == null ? "src/res/Text files/txtFile"+cnt+".txt": chosenFile.getRealPath());
-                        file.write(txt.getText().getBytes());
-                        file.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        System.out.print("File Not Found\n");
-                    }
-                    if(chosenFile.getRealPath() == null) {
-                        chosenFile.setRealPath("src/res/Text files/txtFile" + cnt + ".txt");
-                    }
-                    if(chosenFile == null) {
-                        fileChooser = new sfe.os.FileChooser("", "save");
+                    if(chosenFile != null) {
+                        try {
+                            file = new FileOutputStream(chosenFile.getRealPath() == null ? "src/res/Text files/txtFile"+cnt+".txt": chosenFile.getRealPath());
+                            file.write(txt.getText().getBytes());
+                            file.close();
+                        } catch (IOException e) { /* do nothing.. */ }
+                        if(chosenFile.getRealPath() == null) { chosenFile.setRealPath("src/res/Text files/txtFile" + cnt + ".txt"); }
+                    }else {
+                        try {
+                            file = new FileOutputStream("src/res/Text files/txtFile" + cnt + ".txt");
+                            file.write(txt.getText().getBytes());
+                            file.close();
+                            fileChooser = new FileChooser("src/res/Text files/txtFile" + cnt +".txt", "save");
+                        } catch (IOException e) { /*do nothing.. */ }
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "text is empty", "Error", JOptionPane.ERROR_MESSAGE);
