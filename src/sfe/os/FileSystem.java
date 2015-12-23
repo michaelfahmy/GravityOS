@@ -31,7 +31,7 @@ public class FileSystem {
         root = new Folder("root", "/home", null);
         currentFolder = root;
         Folder storage = newFolder("home");
-        storage.setHidden();
+//        storage.setHidden();
         this.seeds(storage, "src/res");
         this.retrieve();
         txtEditorList = new LinkedList<>();

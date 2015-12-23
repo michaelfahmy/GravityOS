@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 public class Folder extends Directory {
 
-    LinkedList<Directory> children;
+    public LinkedList<Directory> children;
     public Folder(String name, String path, Folder parent) {
         super(name, path, parent);
         children = new LinkedList<>();
