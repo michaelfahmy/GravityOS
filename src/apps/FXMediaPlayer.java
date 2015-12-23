@@ -62,9 +62,10 @@ public class FXMediaPlayer {
     public Scene createScene() {
         BorderPane border = new BorderPane();
         border.setTop(menuBar());
-        if (f != null)
-            border.setCenter(mediaScene());
         border.setBottom(controlsBar());
+        if (f != null) {
+            border.setCenter(mediaScene());
+        }
         if (type.equals("mp3"))
             return new Scene(border, 300, 150);
         else

@@ -214,7 +214,7 @@ public class Explorer {
         newFolderItem.setOnAction(event1 -> newFolderDialog());
         newFileItem.setOnAction(event1 ->  newFileDialog());
         pasteItem.setOnAction(event1 -> { Main.fileSystem.paste(); refresh(); });
-        propertiesItem.setOnAction(event1 -> { /* Properties.*/ });
+        propertiesItem.setOnAction(event1 -> { propertyDialog(Main.fileSystem.getCurrentFolder()); });
         SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
         SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
         rightClickMenu4Tiles.getItems().addAll(newFolderItem, newFileItem, separatorMenuItem1, pasteItem, separatorMenuItem2, propertiesItem);
@@ -245,17 +245,21 @@ public class Explorer {
 
         MenuItem copyItem = new MenuItem("Copy");
         copyItem.setOnAction(e -> Main.fileSystem.copy(dir));
+
         MenuItem cutItem = new MenuItem("Cut");
         cutItem.setOnAction(e -> Main.fileSystem.cut(dir));
 
         MenuItem renameItem = new MenuItem("Rename");
         renameItem.setOnAction(event1 -> renameDir(dir));
+
         MenuItem deleteItem = new MenuItem("Delete");
         deleteItem.setOnAction(e -> {
             Main.fileSystem.delete(dir);
             refresh();
         });
+
         MenuItem propertiesItem = new MenuItem("Properties");
+        propertiesItem.setOnAction(event -> propertyDialog(dir));
 
         SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
         SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
@@ -311,6 +315,62 @@ public class Explorer {
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(name -> Main.fileSystem.rename(dir, name));
         refresh();
+    }
+
+    public void propertyDialog(Directory dir){
+        Stage propertyStage = new Stage();
+        TextField name =  new TextField();
+        TextField urlLink = new TextField();
+        TextField type=new TextField();
+        TextField location = new TextField();
+        TextField premision = new TextField();
+        TextField contains = new TextField();
+        propertyStage.setTitle("Property");
+        GridPane root= new GridPane();
+        root.setHgap(10);
+        root.setVgap(5);
+        name.setText("Name :     "+ dir.getName());
+        name.setEditable(false);
+        location.setText("Location :     "+dir.getParent().getPath());
+        location.setEditable(false);
+        urlLink.setText("Path :     "+dir.getPath());
+        urlLink.setEditable(false);
+        if(dir  instanceof Folder  ) {
+            contains.setText("Contains :     " + ((Folder) dir).getChildren().size());
+            contains.setEditable(false);
+            root.setConstraints(contains,1,10);
+            root.setColumnSpan(contains ,28);
+            root.setRowSpan(contains,2);
+            root.getChildren().add(contains);
+        }else if( dir instanceof File ) {
+            premision.setText("Permision :     " + ((File) dir).getPermission());
+            type.setText("Type :     " +((File) dir).getExtension());
+            premision.setEditable(false);
+            type.setEditable(false);
+            root.setConstraints(premision,1,10);
+            root.setConstraints(type,1,13);
+            root.setColumnSpan(premision,28);
+            root.setRowSpan(premision,2);
+            root.setColumnSpan(type,28);
+            root.setRowSpan(type,2);
+            root.getChildren().add(premision);
+            root.getChildren().add(type);
+        }
+
+
+        root.setConstraints(name , 1,1);
+        root.setConstraints(urlLink,1,4);
+        root.setConstraints(location,1,7);
+
+        root.setColumnSpan(name ,28);
+        root.setRowSpan(name,2);
+        root.setColumnSpan(urlLink ,28);
+        root.setRowSpan(urlLink,2);
+        root.setColumnSpan(location,28);
+        root.setRowSpan(location,2);
+        root.getChildren().addAll(name,urlLink,location);
+        propertyStage.setScene(new Scene(root,290,190));
+        propertyStage.show();
     }
 
 

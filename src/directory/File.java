@@ -10,4 +10,8 @@ public class File extends Directory {
         this.extension = extension;
     }
     public String getExtension() { return this.extension; }
+
+    public String getPermission() {
+        return permission;
+    }
 }

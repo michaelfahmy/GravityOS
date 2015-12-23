@@ -211,13 +211,14 @@ public class FileSystem {
             }else {
                 name = currFile.getName().substring(0, currFile.getName().indexOf('.'));
                 extension = currFile.getName().substring(currFile.getName().indexOf('.') + 1);
-                permission = extension.equals(".html") ? "r" : "r/w";
+                permission = extension.equals(".txt") ? "r/w" : "r";
                 File fle = new File(name, extension, currPos.getPath() + "/" + name + "." + extension,currPos, permission);
                 fle.setRealPath(currFile.toURI().toString());
                 currPos.getChildren().add(fle);
             }
         }
     }
+
     void printAll() {
         printAll(this.root, 0);
     }
