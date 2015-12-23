@@ -28,9 +28,8 @@ public class Memo {
         this.chosenFile = chosenFile != null ? chosenFile : null;
         ++cnt;
         stage = new Stage();
-        stage.setTitle("Text Editor");
+        stage.setTitle("Memo");
         stage.setScene(new nota().not());
-        stage.setResizable(false);
         stage.show();
     }
     public File getChosenFile() {

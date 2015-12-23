@@ -159,7 +159,7 @@ public class Main extends Application {
             }
         });
 
-        Label browserApp = new Label(null, new ImageView("res/Browser.png"));
+        Label browserApp = new Label(null, new ImageView("res/Space.png"));
         browserApp.setAlignment(Pos.CENTER);
         browserApp.setOnMouseEntered(event1 -> {
             browserApp.setScaleX(1.3);
