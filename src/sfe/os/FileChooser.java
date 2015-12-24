@@ -16,11 +16,9 @@ public class FileChooser {
 
     private Stage stage;
     private BorderPane explorer;
-    private String selectedFilePath;
     private Button back, action;
     private String SAVE = "save", operation = SAVE, realPath, fileExtension;
     TextField fileName = new TextField();
-    VBox vBox;
     HBox hBox;
 
     public FileChooser(String fileExtension, String realPath, String operation) {
@@ -46,6 +44,7 @@ public class FileChooser {
                 Memo.chosenFile = fle;
                 Main.fileSystem.getCurrentFolder().getChildren().add(fle);
                 Main.fileSystem.store();
+                Main.fileSystem.goRoot();
             }else {
                 Main.fileSystem.open(Main.fileSystem.getSelected());
             }
@@ -63,9 +62,10 @@ public class FileChooser {
         });
 
         explorer.setTop(back);
-        vBox = new VBox();
         hBox = new HBox();
         fileName.setPrefWidth(stage.getWidth() - 150);
+        hBox.setPadding(new Insets(7));
+        hBox.setSpacing(10);
         hBox.getChildren().addAll(new HBox(new Label("  Name:\t"), fileName), action);
         if(operation.equals(SAVE))
             explorer.setBottom(hBox);
@@ -73,8 +73,6 @@ public class FileChooser {
         stage.setScene(new Scene(explorer));
         stage.show();
     }
-
-
 
     private void refresh() {
         TilePane tiles = new TilePane();

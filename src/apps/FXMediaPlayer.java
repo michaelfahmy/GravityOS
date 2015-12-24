@@ -31,6 +31,7 @@ public class FXMediaPlayer {
     private ProgressBar progress = new ProgressBar();
     private ChangeListener<Duration> progressChangeListener;
     boolean playing = false;
+    Label play = new Label();
     private File f = null;
     private String type = "mp3";
 
@@ -39,15 +40,12 @@ public class FXMediaPlayer {
         stage.setTitle("Media Player");
 
         if (file != null) {
-            System.out.println(file.getAbsolutePath());
             this.f = file;
             this.type = f.getName().substring(f.getName().length() - 3, f.getName().length());
         }
 
         stage.setScene(createScene());
-        stage.setOnCloseRequest(event -> {
-            closeApp();
-        });
+        stage.setOnCloseRequest(event -> closeApp());
         stage.show();
     }
 
@@ -91,6 +89,9 @@ public class FXMediaPlayer {
     }
 
     private void setCurrentlyPlaying(final MediaPlayer newPlayer) {
+        playing = true;
+        play.setGraphic(new ImageView("res/MediaIcons/pause.png"));
+
         progress.setProgress(0);
         progressChangeListener = (observableValue, oldValue, newValue) -> progress.setProgress(1.0 * newPlayer.getCurrentTime().toMillis() / newPlayer.getTotalDuration().toMillis());
         newPlayer.currentTimeProperty().addListener(progressChangeListener);
@@ -115,9 +116,13 @@ public class FXMediaPlayer {
         currentlyPlaying.setAlignment(Pos.CENTER);
 
         Label stop = new Label(null, new ImageView(new Image("res/MediaIcons/stop.png")));
-        Label play = new Label(null, new ImageView(new Image("res/MediaIcons/pause.png")));
         Label forward = new Label(null, new ImageView(new Image("res/MediaIcons/forward.png")));
         Label backward = new Label(null, new ImageView(new Image("res/MediaIcons/backward.png")));
+        if (!playing) {
+            play.setGraphic(new ImageView("res/MediaIcons/play.png"));
+        } else {
+            play.setGraphic(new ImageView("res/MediaIcons/pause.png"));
+        }
 
         {
             stop.setOnMouseEntered(event2 -> stop.setEffect(new Glow(0.2)));
@@ -154,8 +159,8 @@ public class FXMediaPlayer {
                 if (!playing) {
                     mediaView.getMediaPlayer().play();
                     play.setGraphic(new ImageView("res/MediaIcons/pause.png"));
-                    stop.setDisable(false);
                     playing = true;
+                    stop.setDisable(false);
                 } else {
                     mediaView.getMediaPlayer().pause();
                     play.setGraphic(new ImageView("res/MediaIcons/play.png"));

@@ -195,6 +195,7 @@ public class Explorer {
                     view.setGraphic(new ImageView("res/ExplorerIcons/txt.png"));
                     break;
                 case "jpg":
+                case "png":
                     view.setGraphic(new ImageView("res/ExplorerIcons/jpg.png"));
                     break;
                 case "mp3":
@@ -348,6 +349,7 @@ public class Explorer {
         root.add(typeLabel, 1, 2);
         root.add(type, 2, 2);
 
+        System.out.println(dir.getRealPath());
         Label sizeLabel = new Label("Size: ");
         TextField size =  new TextField(dir.getSize() + "");
         size.setEditable(false);

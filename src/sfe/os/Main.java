@@ -1,9 +1,6 @@
 package sfe.os;
 
-import apps.FXMediaPlayer;
-import apps.ImageViewer;
-import apps.Memo;
-import apps.WebBrowser;
+import apps.*;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -192,7 +189,7 @@ public class Main extends Application {
         calculator.setOnMouseClicked(event -> {
             if(event.getButton().equals(MouseButton.PRIMARY)) {
                 if(event.getClickCount() == 1) {
-                    /* open calc */
+                    new Calc();
                 }
             }
         });

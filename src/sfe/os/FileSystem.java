@@ -27,6 +27,7 @@ public class FileSystem {
     private Directory selected = null;
     Directory toBePasted;
     String whichProcess;
+
     public FileSystem() {
         root = new Folder("root", "/home", null);
         currentFolder = root;
@@ -34,10 +35,13 @@ public class FileSystem {
         this.retrieve();
         txtEditorList = new LinkedList<>();
     }
+
     public Folder getRoot() {
         return this.root;
     }
+
     void goRoot() { this.currentFolder = root;  }
+
     public void select(Directory selected, Label view) {
         this.selected = selected;
         if (view != null)
@@ -180,7 +184,6 @@ public class FileSystem {
         } catch (IOException e) {
             System.out.println("store(): " + e.toString());
         }
-//        this.printAll();
     }
 
     void retrieve() {
@@ -200,6 +203,7 @@ public class FileSystem {
     void seeds(Folder currPos, String path) {
         String name, extension, permission = "";
         java.io.File resDir = (new java.io.File(path));
+        if (resDir.listFiles() == null) return;
         for(java.io.File currFile: resDir.listFiles()) {
             if(currFile.isDirectory()) {
                 name = currFile.getName();
@@ -217,6 +221,7 @@ public class FileSystem {
             }
         }
     }
+
     void printAll() {
         printAll(this.root, 0);
     }

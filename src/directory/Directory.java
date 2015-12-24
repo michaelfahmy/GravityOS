@@ -31,12 +31,16 @@ public class Directory implements Serializable {
 
     double getSize(Directory X) {
         double sz = 0;
+        java.io.File f = null;
         if(X instanceof File) {
             String pth = X.getRealPath();
-            pth = pth.replaceAll("%20", " ").substring(5);
-            java.io.File f = new java.io.File(pth);
-            sz = ((1.0 * f.length()) / Math.pow(1024, 2.0));
-            return X.getRealPath() == null ? 0 : ((double)((int)(sz * 100)))/100.00;
+            if (pth != null)  {
+                pth = pth.replaceAll("%20", " ").substring(5);
+                f = new java.io.File(pth);
+                sz = ((1.0 * f.length()) / Math.pow(1024, 2.0));
+                return X.getRealPath() == null ? 0 : ((double)((int)(sz * 100)))/100.00;
+            }
+            return 0;
         }
         Folder cur = (Folder) X;
 

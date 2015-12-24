@@ -55,7 +55,7 @@ public class WebBrowser {
         Socket sock = new Socket();
         InetSocketAddress address = new InetSocketAddress(url, 80);
         try {
-            sock.connect(address, 3000);
+            sock.connect(address);
             if (sock.isConnected()) {
                 status = true;
             }
@@ -119,8 +119,8 @@ public class WebBrowser {
         });
 
         home = new Label(null, new ImageView("res/BrowserIcons/home.png"));
-        home.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> goButton.setEffect(new Glow(0.5)));
-        home.addEventHandler(MouseEvent.MOUSE_EXITED, event -> goButton.setEffect(null));
+        home.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> home.setEffect(new Glow(0.5)));
+        home.addEventHandler(MouseEvent.MOUSE_EXITED, event -> home.setEffect(null));
         home.setOnMouseClicked(e -> {
             if (!checkIntConnection(defaultUrl)) {
                 alert();
@@ -132,24 +132,11 @@ public class WebBrowser {
         goButton = new Label(null, new ImageView(new Image("res/BrowserIcons/go.png")));
         goButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> goButton.setEffect(new Glow(0.5)));
         goButton.addEventHandler(MouseEvent.MOUSE_EXITED, event -> goButton.setEffect(null));
-        goButton.setOnMouseClicked(e -> {
-            // adding the http or https prefix if user didn't type it
-            if (!checkIntConnection(defaultUrl)) {
-                alert();
-            } else {
-                if (url.getText().length() > 7 && (url.getText(0, 7).equals("http://") || url.getText(0, 8).equals("https://"))) {
-                    browser.getEngine().load(url.getText());
-                } else if (url.getText().length() > 7 && !url.getText(0, 7).equals("http://")) {
-                    browser.getEngine().load("http://" + url.getText());
-                } else {
-                    browser.getEngine().load("https://" + url.getText());
-                }
-            }
-        });
+        goButton.setOnMouseClicked(e -> goUrl());
 
 
         url.setText(fileUrl);
-        engine.load(fileUrl);
+        goUrl();
 
 
         webHistoryComboBox = new ComboBox();
@@ -250,7 +237,20 @@ public class WebBrowser {
         return entryList.get(currentIndex).getUrl();
     }
 
-
+    private void goUrl() {
+        // adding the http or https prefix if user didn't type it
+        if (!checkIntConnection(defaultUrl)) {
+            alert();
+        } else {
+            if (url.getText().length() > 7 && (url.getText(0, 7).equals("http://") || url.getText(0, 8).equals("https://"))) {
+                browser.getEngine().load(url.getText());
+            } else if (url.getText().length() > 7 && !url.getText(0, 7).equals("http://")) {
+                browser.getEngine().load("http://" + url.getText());
+            } else {
+                browser.getEngine().load("https://" + url.getText());
+            }
+        }
+    }
 
 
 }
