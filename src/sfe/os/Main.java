@@ -219,9 +219,33 @@ public class Main extends Application {
             }
         });
 
+        Label xo = new Label(null, new ImageView("res/xo.png"));
+        xo.setAlignment(Pos.CENTER);
+        xo.setOnMouseEntered(event1 -> {
+            xo.setScaleX(1.3);
+            xo.setScaleY(1.3);
+        });
+        xo.setOnMouseExited(event1 -> {
+            xo.setScaleX(1);
+            xo.setScaleY(1);
+        });
+        xo.setOnMouseClicked(event -> {
+            if(event.getButton().equals(MouseButton.PRIMARY)) {
+                if(event.getClickCount() == 1) {
+                    Process p = new Process("xo");
+                    cpu.addProcess(p);
+                    if(cpu.list.size()==1){
+                        cpu.RR_Schedule();
+                    }
+                    new TicTacToe(cpu, p.getId());
 
-        appsBar.getChildren().addAll(fileExplorer, imageViewerApp, memoApp, musicPlayerApp, videoPlayerApp, browserApp, calculator);
-        appsBar.setBackground(new Background(new BackgroundFill(Color.web("#000000", 0.3), new CornerRadii(5), new Insets(0, 370, 0, 370))));
+                }
+            }
+        });
+
+
+        appsBar.getChildren().addAll(fileExplorer, imageViewerApp, memoApp, musicPlayerApp, videoPlayerApp, browserApp, calculator, xo);
+        appsBar.setBackground(new Background(new BackgroundFill(Color.web("#000000", 0.3), new CornerRadii(5), new Insets(0, 350, 0, 350))));
         appsBar.setPadding(new Insets(5, 0, 5, 0));
         appsBar.setAlignment(Pos.CENTER);
         return appsBar;
