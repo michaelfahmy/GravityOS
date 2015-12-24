@@ -14,6 +14,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 
+import javax.swing.*;
 import java.io.*;
 
 import java.util.LinkedList;
@@ -122,8 +123,10 @@ public class FileSystem {
                                 }
                                 txtEditorList.add(new Memo((File) toBeOpened, p.getId(), cpu));
                             }
-                            else
-                                System.out.print("maft7oosh tany\n");
+                            else {
+                                System.out.print("Synchronized!\n");
+                                JOptionPane.showMessageDialog(null, "The file is opened!", "Warning", JOptionPane.WARNING_MESSAGE);
+                            }
                             break;
                         case "jpg":
                             System.out.println("Opening image viewer");

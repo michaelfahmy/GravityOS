@@ -118,7 +118,7 @@ public class Main extends Application {
         memoApp.setOnMouseClicked(event -> {
             if(event.getButton().equals(MouseButton.PRIMARY)) {
                 if(event.getClickCount() == 1) {
-                    Process p = new Process("TextEditor");
+                    Process p = new Process("Memo");
                     cpu.addProcess(p);
                     if(cpu.list.size()==1){
                         cpu.RR_Schedule();
@@ -206,8 +206,15 @@ public class Main extends Application {
         });
         calculator.setOnMouseClicked(event -> {
             if(event.getButton().equals(MouseButton.PRIMARY)) {
+
                 if(event.getClickCount() == 1) {
-                    new Calc();
+                    Process p = new Process("Calculator");
+                    cpu.addProcess(p);
+                    if(cpu.list.size()==1){
+                        cpu.RR_Schedule();
+                    }
+                    new Calc(cpu,p.getId());
+
                 }
             }
         });

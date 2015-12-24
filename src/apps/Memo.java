@@ -2,7 +2,6 @@ package apps;
 
 
 import directory.File;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -11,9 +10,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.controlsfx.dialog.FontSelectorDialog;
-import sfe.os.*;
+import sfe.os.CPU;
+import sfe.os.FileChooser;
+import sfe.os.FileSystem;
 
 import javax.swing.*;
 import java.io.*;
@@ -45,7 +45,7 @@ public class Memo {
         stage.setScene(new nota().not());
         stage.show();
         stage.setOnCloseRequest(event -> { closeIt(); stage.close();
-            System.out.println("Text editor with id :"+id+" Is removed");
+            System.out.println("Memo with id :"+id+" Is removed");
             cpu.RemoveProcess(id);
         });
     }

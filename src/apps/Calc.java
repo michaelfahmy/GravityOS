@@ -11,6 +11,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import sfe.os.CPU;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,14 +34,20 @@ public class Calc {
 
     private Op curOp = Op.NOOP;
     private Op stackOp = Op.NOOP;
-
-
-    public Calc() {
+int id;
+static CPU cpu=new CPU();
+    public Calc(CPU cpu,int id) {
+        this.id=id;
+        this.cpu=cpu;
         Stage stage = new Stage();
         final TextField screen = createScreen();
         final TilePane buttons = createButtons();
 
         stage.setTitle("Calculator");
+        stage.setOnCloseRequest(event -> {
+            System.out.println("Calculator with id : "+id+" Is removed");
+            cpu.RemoveProcess(id);
+        });
         stage.initStyle(StageStyle.UTILITY);
         stage.setResizable(false);
         stage.setScene(new Scene(createLayout(screen, buttons)));
