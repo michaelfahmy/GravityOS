@@ -22,8 +22,9 @@ public class FileChooser {
     TextField fileName = new TextField();
     VBox vBox;
     HBox hBox;
-
-    public FileChooser(String fileExtension, String realPath, String operation) {
+    static  CPU cpu;
+    public FileChooser(String fileExtension, String realPath, String operation,CPU cpu) {
+        this.cpu = cpu;
         this.operation = operation;
         this.realPath = realPath;
         this.fileExtension = fileExtension;

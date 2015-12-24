@@ -27,7 +27,10 @@ public class FileSystem {
     private Directory selected = null;
     Directory toBePasted;
     String whichProcess;
-    public FileSystem() {
+
+    static CPU cpu=new CPU();
+    public FileSystem(CPU cpu) {
+        this.cpu=cpu;
         root = new Folder("root", "/home", null);
         currentFolder = root;
         this.seeds(root, "src/storage");
@@ -101,31 +104,58 @@ public class FileSystem {
                         case "txt":
                             System.out.println("Opening text editor");
                             boolean opened = false;
-                            for(Memo txtE: txtEditorList) {
-                                if(toBeOpened == txtE.getChosenFile()) {
+                            for (Memo txtE : txtEditorList) {
+                                if (toBeOpened == txtE.getChosenFile()) {
                                     opened = true;
                                 }
                             }
-                            if(!opened)
-                                txtEditorList.add(new Memo((File) toBeOpened));
+                            if (!opened) {
+                                Process p = new Process("TextEditor");
+
+                                cpu.addProcess(p);
+                                if(cpu.list.size()==1){
+                                    cpu.RR_Schedule();
+                                }
+                                txtEditorList.add(new Memo((File) toBeOpened, p.getId(), cpu));
+                            }
                             else
                                 System.out.print("maft7oosh tany\n");
                             break;
                         case "jpg":
                             System.out.println("Opening image viewer");
-                            new ImageViewer(new java.io.File(pth));
-                            break;
+                            Process p=new Process("ImageViewer");
+                            cpu.addProcess(p);
+                            if(cpu.list.size()==1) {
+                                cpu.RR_Schedule();
+                            }
+                            new ImageViewer(new java.io.File(pth),p.getId(),cpu);
                         case "mp3":
                             System.out.println("Opening music player");
-                            new FXMediaPlayer(new java.io.File(pth));
+                            Process p1=new Process("MusicPlayer");
+                            cpu.addProcess(p1);
+                            if(cpu.list.size()==1){
+                                cpu.RR_Schedule();
+                            }
+                            new FXMediaPlayer(new java.io.File(pth),p1.getId(),cpu);
                             break;
                         case "mp4":
+
                             System.out.println("Opening video player");
-                            new FXMediaPlayer(new java.io.File(pth));
+                            Process p2=new Process("vedioPlayer");
+                            cpu.addProcess(p2);
+                            if(cpu.list.size()==1){
+                                cpu.RR_Schedule();
+                            }
+                            new FXMediaPlayer(new java.io.File(pth),p2.getId(),cpu);
                             break;
                         case "html":
                             System.out.println("Opening browser");
-                            new WebBrowser(pth);
+                            Process p3=new Process("WebBrowser");
+                            cpu.addProcess(p3);
+                            if(cpu.list.size()==1){
+                                cpu.RR_Schedule();
+                            }
+                            new WebBrowser(WebBrowser.defaultUrl,p3.getId(),cpu);
                             break;
                     }
                 }

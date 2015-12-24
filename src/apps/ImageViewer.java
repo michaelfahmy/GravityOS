@@ -1,5 +1,6 @@
 package apps;
 
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -10,6 +11,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import sfe.os.CPU;
 import sfe.os.FileChooser;
 
 import java.io.File;
@@ -18,14 +21,15 @@ public class ImageViewer {
     private double angles[] = {90, 180, 270, 360};
     private int currentAngle = 0;
     private double height;
-
+    int id;
     Stage stage;
     ImageView imgView = new ImageView();
-
-    public ImageViewer(File fileUrl) {
+    static CPU cpu;
+    public ImageViewer(File fileUrl,int id ,CPU cpu) {
+        this.cpu=cpu;
         stage = new Stage();
         stage.setTitle("Image Viewer");
-
+        this.id=id;
         BorderPane border = new BorderPane();
         border.setTop(menuBar());
         border.setCenter(viewer(fileUrl));
@@ -33,6 +37,13 @@ public class ImageViewer {
 
         stage.setScene(new Scene(border));
         stage.show();
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                System.out.println("Image Viewer with id :"+id+" Is removed");
+                cpu.RemoveProcess(id);
+            }
+        });
     }
 
     public MenuBar menuBar() {
@@ -42,7 +53,7 @@ public class ImageViewer {
         Menu fileMenu = new Menu("File");
         {
             MenuItem open = new MenuItem("Open...");
-            open.setOnAction(event -> { new FileChooser("jpg", "", "open"); stage.close(); } );
+            open.setOnAction(event -> { new FileChooser("jpg", "", "open",cpu); stage.close(); } );
             MenuItem close = new MenuItem("Exit");
             close.setOnAction(event -> stage.close());
             fileMenu.getItems().addAll(open, close);
@@ -78,7 +89,6 @@ public class ImageViewer {
         zoomControls.setPickOnBounds(true);
         zoomControls.setAlignment(Pos.TOP_LEFT);
         zoomControls.setPadding(new Insets(10));
-
         if (fileUrl != null) {
             Image img = new Image(fileUrl.toURI().toString());
             height = img.getHeight();
