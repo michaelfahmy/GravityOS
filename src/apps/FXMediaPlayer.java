@@ -38,23 +38,14 @@ public class FXMediaPlayer {
         stage = new Stage();
         stage.setTitle("Media Player");
 
-        if (file != null) {
-            System.out.println(file.getPath());
-            if (!file.isFile() || !file.exists() || !(file.getPath().endsWith(".mp3") || file.getPath().endsWith(".mp4"))) {
-                System.out.println("3\'alat keda");
-                stage.close();
-            }
-            this.f = file;
-            this.type = f.getName().substring(f.getName().length() - 3, f.getName().length());
-        }
+        System.out.println(file.getName());
+
+        this.f = file;
+        this.type = f.getName().substring(f.getName().length() - 3, f.getName().length());
 
         stage.setScene(createScene());
         stage.setOnCloseRequest(event -> {
-            stage.close();
-            if (mediaView != null) {
-                mediaView.getMediaPlayer().stop();
-                mediaView.getMediaPlayer().dispose();
-            }
+            closeApp();
         });
         stage.show();
     }
@@ -67,9 +58,9 @@ public class FXMediaPlayer {
             border.setCenter(mediaScene());
         }
         if (type.equals("mp3"))
-            return new Scene(border, 300, 150);
+            return new Scene(border, 500, 150);
         else
-            return new Scene(border, 720, 480);
+            return new Scene(border, 720, 600);
     }
 
     public MenuBar menuBar() {
@@ -82,7 +73,7 @@ public class FXMediaPlayer {
             stage.close();
         } );
         MenuItem close = new MenuItem("Exit");
-        close.setOnAction(event -> stage.close());
+        close.setOnAction(event -> closeApp());
         fileMenu.getItems().addAll(open, close);
 
         menuBar.getMenus().addAll(fileMenu);
@@ -188,5 +179,13 @@ public class FXMediaPlayer {
         vBox.getChildren().addAll(currentlyPlaying, barControl, controls);
 
         return vBox;
+    }
+
+    private void closeApp() {
+        stage.close();
+        if (mediaView != null) {
+            mediaView.getMediaPlayer().stop();
+            mediaView.getMediaPlayer().dispose();
+        }
     }
 }

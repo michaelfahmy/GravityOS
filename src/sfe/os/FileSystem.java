@@ -28,11 +28,9 @@ public class FileSystem {
     Directory toBePasted;
     String whichProcess;
     public FileSystem() {
-        root = new Folder("root", "/home", null);
+        root = new Folder("root", "home", null);
         currentFolder = root;
-        Folder storage = newFolder("home");
-//        storage.setHidden();
-        this.seeds(storage, "src/storage");
+        this.seeds(root, "src/storage");
         this.retrieve();
         txtEditorList = new LinkedList<>();
     }
