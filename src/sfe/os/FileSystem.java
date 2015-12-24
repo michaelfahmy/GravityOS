@@ -182,7 +182,7 @@ public class FileSystem {
         } catch (IOException e) {
             System.out.println("store(): " + e.toString());
         }
-        this.printAll();
+//        this.printAll();
     }
 
     void retrieve() {
