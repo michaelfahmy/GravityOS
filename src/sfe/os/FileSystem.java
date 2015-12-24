@@ -180,6 +180,7 @@ public class FileSystem {
         } catch (IOException e) {
             System.out.println("store(): " + e.toString());
         }
+//        this.printAll();
     }
 
     void retrieve() {
@@ -211,12 +212,11 @@ public class FileSystem {
                 extension = currFile.getName().substring(currFile.getName().indexOf('.') + 1);
                 permission = extension.equals(".txt") ? "r/w" : "r";
                 File fle = new File(name, extension, currPos.getPath() + "/" + name + "." + extension,currPos, permission);
-                fle.setRealPath(currFile.toURI().toString());
+                fle.setRealPath(currFile.getAbsolutePath());
                 currPos.getChildren().add(fle);
             }
         }
     }
-
     void printAll() {
         printAll(this.root, 0);
     }
@@ -224,7 +224,7 @@ public class FileSystem {
         if (current == null) { return; }
         int t = cnt;
         while (t-- > 0) { System.out.print("-"); }
-        System.out.println(current.getName());
+        System.out.println(current.getName() + "  " + current.getSize());
         if (current instanceof File) { return; }
         for (int i = 0; i < ((Folder) current).getChildren().size(); ++i) {
             printAll(((Folder) current).getChildren().get(i), cnt + 2);

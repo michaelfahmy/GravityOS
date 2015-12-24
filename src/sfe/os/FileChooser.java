@@ -18,9 +18,8 @@ public class FileChooser {
     private BorderPane explorer;
     private String selectedFilePath;
     private Button back, action;
-    private String SAVE = "save", OPEN = "open", operation = SAVE, realPath, fileExtension;
+    private String SAVE = "save", operation = SAVE, realPath, fileExtension;
     TextField fileName = new TextField();
-    ComboBox<String> fileTypes;
     VBox vBox;
     HBox hBox;
 
@@ -42,7 +41,7 @@ public class FileChooser {
         if(!fileName.getText().isEmpty()) { action.setDisable(false); }
         action.setOnAction(event -> {
             if(operation.equals(SAVE)) {
-                directory.File fle = new directory.File(fileName.getText().trim(), fileTypes.getValue(), Main.fileSystem.getCurrentFolder().getPath() + "/" + fileName, Main.fileSystem.getCurrentFolder(), fileTypes.getValue().equals("txt") ? "r/w" : "r");
+                directory.File fle = new directory.File(fileName.getText().trim(), "txt", Main.fileSystem.getCurrentFolder().getPath() + "/" + fileName, Main.fileSystem.getCurrentFolder(), "r/w");
                 fle.setRealPath(realPath);
                 Memo.chosenFile = fle;
                 Main.fileSystem.getCurrentFolder().getChildren().add(fle);
@@ -66,13 +65,8 @@ public class FileChooser {
         explorer.setTop(back);
         vBox = new VBox();
         hBox = new HBox();
-        fileTypes = new ComboBox<>();
-        fileTypes.getItems().addAll("txt", "jpg", "mp3", "mp4", "pdf", "html");
-        fileTypes.setValue("txt");
         fileName.setPrefWidth(stage.getWidth() - 150);
-        fileTypes.setPrefWidth(stage.getWidth() - 150);
-        vBox.getChildren().addAll(new HBox(new Label("  Name:\t"), fileName), new HBox(new Label("  Type:\t"), fileTypes));
-        hBox.getChildren().addAll(vBox, action);
+        hBox.getChildren().addAll(new HBox(new Label("  Name:\t"), fileName), action);
         if(operation.equals(SAVE))
             explorer.setBottom(hBox);
         refresh();
