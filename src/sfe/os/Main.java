@@ -1,4 +1,5 @@
 package sfe.os;
+
 import apps.FXMediaPlayer;
 import apps.ImageViewer;
 import apps.Memo;
@@ -69,7 +70,6 @@ public class Main extends Application {
 
     private HBox apps() {
         HBox appsBar = new HBox(10);
-
         Label fileExplorer = new Label(null, new ImageView("res/FileExplorer.png"));
         fileExplorer.setAlignment(Pos.CENTER);
         fileExplorer.setOnMouseEntered(event1 -> {
@@ -108,7 +108,6 @@ public class Main extends Application {
                 }
             }
         });
-
         Label memoApp = new Label(null, new ImageView("res/Memo.png"));
         memoApp.setAlignment(Pos.CENTER);
         memoApp.setOnMouseEntered(event1 -> {
@@ -131,7 +130,6 @@ public class Main extends Application {
                 }
             }
         });
-
         Label musicPlayerApp = new Label(null, new ImageView("res/MusicPlayer.png"));
         musicPlayerApp.setAlignment(Pos.CENTER);
         musicPlayerApp.setOnMouseEntered(event1 -> {

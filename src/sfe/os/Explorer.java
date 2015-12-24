@@ -25,7 +25,6 @@ public class Explorer {
     private Button back;
     private boolean mark=false;
     static  CPU cpu=new CPU();
-
     public Explorer(CPU cpu) {
         this.cpu=cpu;
         stage = new Stage();
@@ -133,7 +132,6 @@ public class Explorer {
         explorer.setBottom(urlBar());
         populateTiles(tiles);
         explorer.setCenter(tiles);
-
     }
 
     private Label urlBar() {
@@ -142,7 +140,6 @@ public class Explorer {
         path.setStyle("-fx-font-size: 13; -fx-font-family: cursive; -fx-label-padding: 5; -fx-background-color: aliceblue; -fx-opacity: 0.4;");
         return path;
     }
-
 
     private void populateTiles(TilePane tiles) {
         Label view[] = new Label[Main.fileSystem.getCurrentFolder().getChildren().size()];

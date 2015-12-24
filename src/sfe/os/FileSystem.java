@@ -129,9 +129,7 @@ public class FileSystem {
                                 cpu.RR_Schedule();
                             }
                             new ImageViewer(new java.io.File(pth),p.getId(),cpu);
-                            break;
                         case "mp3":
-
                             System.out.println("Opening music player");
                             Process p1=new Process("MusicPlayer");
                             cpu.addProcess(p1);

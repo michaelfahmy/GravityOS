@@ -89,7 +89,6 @@ public class ImageViewer {
         zoomControls.setPickOnBounds(true);
         zoomControls.setAlignment(Pos.TOP_LEFT);
         zoomControls.setPadding(new Insets(10));
-
         if (fileUrl != null) {
             Image img = new Image(fileUrl.toURI().toString());
             height = img.getHeight();

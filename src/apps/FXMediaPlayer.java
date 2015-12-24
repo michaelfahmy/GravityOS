@@ -24,7 +24,7 @@ import sfe.os.FileChooser;
 
 import java.io.File;
 
-public class FXMediaPlayer  {
+public class FXMediaPlayer {
 
     private Stage stage;
     private MediaView mediaView;
@@ -36,9 +36,10 @@ public class FXMediaPlayer  {
     private File f = null;
     private String type = "mp3";
     int id;
+
     public FXMediaPlayer(File file, int id, CPU cpu) {
-        this.id=id;
-        this.cpu=cpu;
+        this.id = id;
+        this.cpu = cpu;
         stage = new Stage();
         stage.setTitle("Media Player");
 
@@ -52,11 +53,9 @@ public class FXMediaPlayer  {
         stage.setOnCloseRequest(event -> {
             closeApp();
             cpu.RemoveProcess(id);
-            System.out.println("FXMediaPlayer with id"+id +"is closed");
+            System.out.println("FXMediaPlayer with id" + id + "is closed");
         });
         stage.show();
-
-
     }
 
     public Scene createScene() {
@@ -78,9 +77,9 @@ public class FXMediaPlayer  {
         Menu fileMenu = new Menu("File");
         MenuItem open = new MenuItem("Open...");
         open.setOnAction(event -> {
-            new FileChooser("mp3", "", "open",cpu);
+            new FileChooser("mp3", "", "open", cpu);
             stage.close();
-        } );
+        });
         MenuItem close = new MenuItem("Exit");
         close.setOnAction(event -> closeApp());
         fileMenu.getItems().addAll(open, close);
