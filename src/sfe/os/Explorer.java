@@ -129,11 +129,19 @@ public class Explorer {
         tiles.setPadding(new Insets(20));
         tiles.setOnMouseClicked(this::tilePaneRightClickContextMenu);
         tiles.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-        explorer.setBottom(new Label(Main.fileSystem.getCurrentFolder().getPath()));
+        explorer.setBottom(urlBar());
         populateTiles(tiles);
         explorer.setCenter(tiles);
 
     }
+
+    private Label urlBar() {
+        Label path = new Label(Main.fileSystem.getCurrentFolder().getPath());
+        path.setPrefWidth(Double.MAX_VALUE);
+        path.setStyle("-fx-font-size: 13; -fx-font-family: cursive; -fx-label-padding: 5; -fx-background-color: aliceblue; -fx-opacity: 0.4;");
+        return path;
+    }
+
 
     private void populateTiles(TilePane tiles) {
         Label view[] = new Label[Main.fileSystem.getCurrentFolder().getChildren().size()];
@@ -320,57 +328,61 @@ public class Explorer {
 
     public void propertyDialog(Directory dir){
         Stage propertyStage = new Stage();
-        TextField name =  new TextField();
-        TextField urlLink = new TextField();
-        TextField type=new TextField();
-        TextField location = new TextField();
-        TextField premision = new TextField();
-        TextField contains = new TextField();
-        propertyStage.setTitle("Property");
+        propertyStage.setTitle("Properties");
+        propertyStage.setResizable(false);
+
         GridPane root= new GridPane();
         root.setHgap(10);
         root.setVgap(5);
-        name.setText("Name :     "+ dir.getName());
+
+        Label nameLabel = new Label();
+        setIcon(dir, nameLabel);
+        TextField name =  new TextField(dir.getName());
         name.setEditable(false);
-        location.setText("Location :     "+dir.getParent().getPath());
+        root.add(nameLabel, 1, 1);
+        root.add(name, 2, 1);
+
+        Label typeLabel = new Label("Type: ");
+        TextField type=new TextField();
+        type.setEditable(false);
+        root.add(typeLabel, 1, 2);
+        root.add(type, 2, 2);
+
+        Label sizeLabel = new Label("Size: ");
+        TextField size =  new TextField(dir.getSize() + "");
+        size.setEditable(false);
+        root.add(sizeLabel, 1, 3);
+        root.add(size, 2, 3);
+
+        Label locationLabel = new Label("Location: ");
+        TextField location = new TextField(dir.getParent().getPath());
         location.setEditable(false);
-        urlLink.setText("Path :     "+dir.getPath());
-        urlLink.setEditable(false);
-        if(dir  instanceof Folder  ) {
-            contains.setText("Contains :     " + ((Folder) dir).getChildren().size());
-            contains.setEditable(false);
-            root.setConstraints(contains,1,10);
-            root.setColumnSpan(contains ,28);
-            root.setRowSpan(contains,2);
-            root.getChildren().add(contains);
-        }else if( dir instanceof File ) {
-            premision.setText("Permision :     " + ((File) dir).getPermission());
-            type.setText("Type :     " +((File) dir).getExtension());
-            premision.setEditable(false);
-            type.setEditable(false);
-            root.setConstraints(premision,1,10);
-            root.setConstraints(type,1,13);
-            root.setColumnSpan(premision,28);
-            root.setRowSpan(premision,2);
-            root.setColumnSpan(type,28);
-            root.setRowSpan(type,2);
-            root.getChildren().add(premision);
-            root.getChildren().add(type);
+        root.add(locationLabel, 1, 4);
+        root.add(location, 2, 4);
+
+        Label permissionLabel = new Label("Permission: ");
+        TextField permission = new TextField();
+        permission.setEditable(false);
+
+        Label children = new Label("Contains: ");
+        TextField contains = new TextField();
+        contains.setEditable(false);
+
+
+        if (dir  instanceof Folder) {
+            type.setText("Folder");
+            contains.setText(((Folder) dir).getChildren().size() + "");
+            root.add(children, 1, 5);
+            root.add(contains, 2, 5);
+        } else {
+            type.setText(((File) dir).getExtension());
+            permission.setText(((File) dir).getPermission());
+            root.add(permissionLabel, 1, 5);
+            root.add(permission, 2, 5);
         }
 
 
-        root.setConstraints(name , 1,1);
-        root.setConstraints(urlLink,1,4);
-        root.setConstraints(location,1,7);
-
-        root.setColumnSpan(name ,28);
-        root.setRowSpan(name,2);
-        root.setColumnSpan(urlLink ,28);
-        root.setRowSpan(urlLink,2);
-        root.setColumnSpan(location,28);
-        root.setRowSpan(location,2);
-        root.getChildren().addAll(name,urlLink,location);
-        propertyStage.setScene(new Scene(root,290,190));
+        propertyStage.setScene(new Scene(root,290,300));
         propertyStage.show();
     }
 

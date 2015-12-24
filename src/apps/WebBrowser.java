@@ -7,7 +7,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -85,50 +85,53 @@ public class WebBrowser {
         browser = new WebView();
         engine = browser.getEngine();
 
-
-        history = browser.getEngine().getHistory();
-
         backButton = new Label(null, new ImageView(new Image("res/BrowserIcons/back.png")));
+        backButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> backButton.setEffect(new Glow(0.5)));
+        backButton.addEventHandler(MouseEvent.MOUSE_EXITED, event -> backButton.setEffect(null));
         backButton.setOnMouseClicked(e -> {
             if (!checkIntConnection(defaultUrl)) {
                 alert();
-            } else
+            } else {
                 browser.getEngine().load(goBack());
+            }
         });
-        backButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> backButton.setEffect(new DropShadow()));
-        backButton.addEventHandler(MouseEvent.MOUSE_EXITED, event -> backButton.setEffect(null));
 
         forwardButton = new Label(null, new ImageView(new Image("res/BrowserIcons/forward.png")));
+        forwardButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> forwardButton.setEffect(new Glow(0.5)));
+        forwardButton.addEventHandler(MouseEvent.MOUSE_EXITED, event-> forwardButton.setEffect(null));
         forwardButton.setOnMouseClicked(e -> {
             if (!checkIntConnection(defaultUrl)) {
                 alert();
-            } else
+            } else {
                 browser.getEngine().load(goForward());
+            }
         });
-        forwardButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> forwardButton.setEffect(new DropShadow()));
-        forwardButton.addEventHandler(MouseEvent.MOUSE_EXITED, event-> forwardButton.setEffect(null));
 
         reloadButton = new Label(null, new ImageView(new Image("res/BrowserIcons/reload.png")));
+        reloadButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> reloadButton.setEffect(new Glow(0.5)));
+        reloadButton.addEventHandler(MouseEvent.MOUSE_EXITED, event -> reloadButton.setEffect(null));
         reloadButton.setOnMouseClicked(e -> {
             if (!checkIntConnection(defaultUrl)) {
                 alert();
-            } else
+            } else {
                 browser.getEngine().reload();
+            }
         });
-        reloadButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> reloadButton.setEffect(new DropShadow()));
-        reloadButton.addEventHandler(MouseEvent.MOUSE_EXITED, event -> reloadButton.setEffect(null));
 
-        home = new Label(null, new ImageView("res/BrowserIcons/reload.png"));
+        home = new Label(null, new ImageView("res/BrowserIcons/home.png"));
+        home.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> goButton.setEffect(new Glow(0.5)));
+        home.addEventHandler(MouseEvent.MOUSE_EXITED, event -> goButton.setEffect(null));
         home.setOnMouseClicked(e -> {
             if (!checkIntConnection(defaultUrl)) {
                 alert();
-            } else
+            } else {
                 browser.getEngine().load(defaultUrl);
+            }
         });
-        home.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> goButton.setEffect(new DropShadow()));
-        home.addEventHandler(MouseEvent.MOUSE_EXITED, event -> goButton.setEffect(null));
 
-        goButton = new Label(null, new ImageView(new Image("res/BrowserIcons/reload.png")));
+        goButton = new Label(null, new ImageView(new Image("res/BrowserIcons/go.png")));
+        goButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> goButton.setEffect(new Glow(0.5)));
+        goButton.addEventHandler(MouseEvent.MOUSE_EXITED, event -> goButton.setEffect(null));
         goButton.setOnMouseClicked(e -> {
             // adding the http or https prefix if user didn't type it
             if (!checkIntConnection(defaultUrl)) {
@@ -143,15 +146,10 @@ public class WebBrowser {
                 }
             }
         });
-        goButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> goButton.setEffect(new DropShadow()));
-        goButton.addEventHandler(MouseEvent.MOUSE_EXITED, event -> goButton.setEffect(null));
 
 
         url.setText(fileUrl);
         engine.load(fileUrl);
-
-        url.setOnMouseClicked(e -> goButton.setGraphic(new ImageView("res/BrowserIcons/go.png")));
-        url.setOnInputMethodTextChanged(e -> goButton.setGraphic(new ImageView("res/BrowserIcons/go.png")));
 
 
         webHistoryComboBox = new ComboBox();
@@ -163,7 +161,10 @@ public class WebBrowser {
             history.go(offset);
         });
 
-        //Displying browse history in a combo box
+
+        history = browser.getEngine().getHistory();
+
+        //Displying browser history in a combo box
         history.getEntries().addListener((ListChangeListener<WebHistory.Entry>) c -> {
             c.next();
             for (WebHistory.Entry e : c.getRemoved())
@@ -196,12 +197,13 @@ public class WebBrowser {
 
         progress.setPrefSize(25, 25);
         progress.visibleProperty().bind(browser.getEngine().getLoadWorker().runningProperty());
+
         BorderPane border = new BorderPane();
         HBox topBar = new HBox();
         topBar.setAlignment(Pos.CENTER);
         topBar.setSpacing(10);
         topBar.setPadding(new Insets(10, 10, 10, 10));
-        topBar.getChildren().addAll(backButton, forwardButton, reloadButton, home, url, goButton, progress, webHistoryComboBox);
+        topBar.getChildren().addAll(home, backButton, forwardButton, reloadButton, url, goButton, progress, webHistoryComboBox);
 
         border.setTop(topBar);
         border.setCenter(browser);

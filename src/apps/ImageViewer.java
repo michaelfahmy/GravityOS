@@ -12,6 +12,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import sfe.os.FileChooser;
 
+import java.io.File;
+
 public class ImageViewer {
     private double angles[] = {90, 180, 270, 360};
     private int currentAngle = 0;
@@ -20,7 +22,7 @@ public class ImageViewer {
     Stage stage;
     ImageView imgView = new ImageView();
 
-    public ImageViewer(String fileUrl) {
+    public ImageViewer(File fileUrl) {
         stage = new Stage();
         stage.setTitle("Image Viewer");
 
@@ -50,7 +52,7 @@ public class ImageViewer {
         return menuBar;
     }
 
-    public ScrollPane viewer(String fileUrl) {
+    public ScrollPane viewer(File fileUrl) {
 
         VBox zoomControls = new VBox();
         Label buttonZoomIn = new Label(null, new ImageView(new Image("res/ImageViewerIcons/zoomIn.png")));
@@ -78,7 +80,7 @@ public class ImageViewer {
         zoomControls.setPadding(new Insets(10));
 
         if (fileUrl != null) {
-            Image img = new Image(fileUrl);
+            Image img = new Image(fileUrl.toURI().toString());
             height = img.getHeight();
             imgView = new ImageView(img);
         } else {

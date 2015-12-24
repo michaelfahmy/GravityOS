@@ -28,7 +28,7 @@ public class FileSystem {
     Directory toBePasted;
     String whichProcess;
     public FileSystem() {
-        root = new Folder("root", "home", null);
+        root = new Folder("root", "/home", null);
         currentFolder = root;
         this.seeds(root, "src/storage");
         this.retrieve();
@@ -113,7 +113,7 @@ public class FileSystem {
                             break;
                         case "jpg":
                             System.out.println("Opening image viewer");
-                            new ImageViewer(pth);
+                            new ImageViewer(new java.io.File(pth));
                             break;
                         case "mp3":
                             System.out.println("Opening music player");

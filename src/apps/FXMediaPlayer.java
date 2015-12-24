@@ -38,10 +38,11 @@ public class FXMediaPlayer {
         stage = new Stage();
         stage.setTitle("Media Player");
 
-        System.out.println(file.getName());
-
-        this.f = file;
-        this.type = f.getName().substring(f.getName().length() - 3, f.getName().length());
+        if (file != null) {
+            System.out.println(file.getAbsolutePath());
+            this.f = file;
+            this.type = f.getName().substring(f.getName().length() - 3, f.getName().length());
+        }
 
         stage.setScene(createScene());
         stage.setOnCloseRequest(event -> {
@@ -81,7 +82,8 @@ public class FXMediaPlayer {
     }
 
     private MediaView mediaScene() {
-        mediaView = new MediaView(new MediaPlayer(new Media(f.getPath().replace(" ","%20"))));
+        // f.getPath().replace(" ","%20") -> kda msht3'ltsh ya ashraf :3
+        mediaView = new MediaView(new MediaPlayer(new Media(f.toURI().toString())));
         mediaView.getMediaPlayer().setOnError(() -> System.out.println("Media error occurred: " + mediaView.getMediaPlayer().getError()));
         mediaView.getMediaPlayer().play();
         setCurrentlyPlaying(mediaView.getMediaPlayer());

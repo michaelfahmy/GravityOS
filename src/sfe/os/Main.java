@@ -179,8 +179,27 @@ public class Main extends Application {
             }
         });
 
-        appsBar.getChildren().addAll(fileExplorer, imageViewerApp, memoApp, musicPlayerApp, videoPlayerApp, browserApp);
-        appsBar.setBackground(new Background(new BackgroundFill(Color.web("#000000", 0.3), new CornerRadii(5), new Insets(0, 400, 0, 400))));
+        Label calculator = new Label(null, new ImageView("res/Calculator.png"));
+        calculator.setAlignment(Pos.CENTER);
+        calculator.setOnMouseEntered(event1 -> {
+            calculator.setScaleX(1.3);
+            calculator.setScaleY(1.3);
+        });
+        calculator.setOnMouseExited(event1 -> {
+            calculator.setScaleX(1);
+            calculator.setScaleY(1);
+        });
+        calculator.setOnMouseClicked(event -> {
+            if(event.getButton().equals(MouseButton.PRIMARY)) {
+                if(event.getClickCount() == 1) {
+                    /* open calc */
+                }
+            }
+        });
+
+
+        appsBar.getChildren().addAll(fileExplorer, imageViewerApp, memoApp, musicPlayerApp, videoPlayerApp, browserApp, calculator);
+        appsBar.setBackground(new Background(new BackgroundFill(Color.web("#000000", 0.3), new CornerRadii(5), new Insets(0, 370, 0, 370))));
         appsBar.setPadding(new Insets(5, 0, 5, 0));
         appsBar.setAlignment(Pos.CENTER);
         return appsBar;
