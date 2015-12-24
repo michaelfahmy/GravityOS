@@ -182,6 +182,7 @@ public class FileSystem {
         } catch (IOException e) {
             System.out.println("store(): " + e.toString());
         }
+        this.printAll();
     }
 
     void retrieve() {
@@ -225,7 +226,7 @@ public class FileSystem {
         if (current == null) { return; }
         int t = cnt;
         while (t-- > 0) { System.out.print("-"); }
-        System.out.println(current.getName());
+        System.out.println(current.getName() + "  " + current.getSize());
         if (current instanceof File) { return; }
         for (int i = 0; i < ((Folder) current).getChildren().size(); ++i) {
             printAll(((Folder) current).getChildren().get(i), cnt + 2);
