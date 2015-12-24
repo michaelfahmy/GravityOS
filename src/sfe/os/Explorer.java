@@ -229,7 +229,7 @@ public class Explorer {
         SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
         rightClickMenu4Tiles.getItems().addAll(newFolderItem, newFileItem, separatorMenuItem1, pasteItem, separatorMenuItem2, propertiesItem);
         if(event.getButton().equals(MouseButton.SECONDARY)
-            && (!event.getTarget().toString().contains("label") && !event.getTarget().toString().contains("Label"))) {
+                && (!event.getTarget().toString().contains("label") && !event.getTarget().toString().contains("Label"))) {
             mark = false;
             Main.fileSystem.select(null, null);
             rightClickMenu4Tiles.show(explorer, event.getScreenX(), event.getScreenY());

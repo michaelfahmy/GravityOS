@@ -41,7 +41,7 @@ public class WebBrowser {
     ComboBox webHistoryComboBox;
     TextField url;
     ProgressIndicator progress = new ProgressIndicator();
-int id;
+    int id;
     public WebBrowser(String fileUrl,int id, CPU cpu) {
         this.id=id;
         this.fileUrl = fileUrl;

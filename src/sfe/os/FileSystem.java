@@ -128,7 +128,7 @@ public class FileSystem {
                             if(cpu.list.size()==1) {
                                 cpu.RR_Schedule();
                             }
-                           new ImageViewer(new java.io.File(pth),p.getId(),cpu);
+                            new ImageViewer(new java.io.File(pth),p.getId(),cpu);
                             break;
                         case "mp3":
 

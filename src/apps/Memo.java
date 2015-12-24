@@ -24,7 +24,7 @@ public class Memo {
     private Stage stage;
     public static directory.File chosenFile = null;
     static private int cnt = 0;
-int id;
+    int id;
     static CPU cpu=new CPU();
     sfe.os.FileChooser fileChooser;
     void closeIt() {

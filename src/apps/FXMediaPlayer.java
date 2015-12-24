@@ -31,11 +31,11 @@ public class FXMediaPlayer  {
     private Label currentlyPlaying = new Label();
     private ProgressBar progress = new ProgressBar();
     private ChangeListener<Duration> progressChangeListener;
-   static CPU cpu;
+    static CPU cpu;
     boolean playing = false;
     private File f = null;
     private String type = "mp3";
-int id;
+    int id;
     public FXMediaPlayer(File file, int id, CPU cpu) {
         this.id=id;
         this.cpu=cpu;

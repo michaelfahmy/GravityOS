@@ -21,15 +21,15 @@ public class ImageViewer {
     private double angles[] = {90, 180, 270, 360};
     private int currentAngle = 0;
     private double height;
-int id;
+    int id;
     Stage stage;
     ImageView imgView = new ImageView();
-static CPU cpu;
+    static CPU cpu;
     public ImageViewer(File fileUrl,int id ,CPU cpu) {
         this.cpu=cpu;
         stage = new Stage();
         stage.setTitle("Image Viewer");
-this.id=id;
+        this.id=id;
         BorderPane border = new BorderPane();
         border.setTop(menuBar());
         border.setCenter(viewer(fileUrl));
