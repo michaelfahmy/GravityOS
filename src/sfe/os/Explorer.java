@@ -44,6 +44,7 @@ public class Explorer {
 
     private void onClose(){
         Main.fileSystem.store();
+        Main.fileSystem.goRoot();
         stage.close();
     }
 
