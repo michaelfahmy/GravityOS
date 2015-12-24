@@ -91,17 +91,17 @@ public class Memo {
                     OutputStream file = null;
                     if(chosenFile != null) {
                         try {
-                            file = new FileOutputStream(chosenFile.getRealPath() == null ? "src/res/Text files/txtFile"+cnt+".txt": chosenFile.getRealPath());
+                            file = new FileOutputStream(chosenFile.getRealPath() == null ? "src/storage/Text files/txtFile"+cnt+".txt": chosenFile.getRealPath());
                             file.write(txt.getText().getBytes());
                             file.close();
                         } catch (IOException e) { /* do nothing.. */ }
-                        if(chosenFile.getRealPath() == null) { chosenFile.setRealPath("src/res/Text files/txtFile" + cnt + ".txt"); }
+                        if(chosenFile.getRealPath() == null) { chosenFile.setRealPath("src/storage/Text files/txtFile" + cnt + ".txt"); }
                     }else {
                         try {
-                            file = new FileOutputStream("src/res/Text files/txtFile" + cnt + ".txt");
+                            file = new FileOutputStream("src/storage/Text files/txtFile" + cnt + ".txt");
                             file.write(txt.getText().getBytes());
                             file.close();
-                            fileChooser = new FileChooser("txt", "src/res/Text files/txtFile" + cnt +".txt", "save");
+                            fileChooser = new FileChooser("txt", "src/storage/Text files/txtFile" + cnt +".txt", "save");
                         } catch (IOException e) { /*do nothing.. */ }
                     }
                 } else {
