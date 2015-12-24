@@ -12,18 +12,25 @@ import javafx.stage.Stage;
 public class FileChooser {
 
     private FileSystem fileSystem;
-    private BorderPane explorer;
     private Stage stage;
+    private BorderPane explorer;
     private String selectedFilePath;
 
     public FileChooser(Directory tobe) {
-        explorer = new BorderPane();
-        fileSystem = new FileSystem();
         stage = new Stage();
         stage.setTitle("FileChooser");
         stage.setHeight(500);
         stage.setWidth(750);
+        explorer = new BorderPane();
+        fileSystem = new FileSystem();
+
+        refresh(tobe);
+
+        stage.setScene(new Scene(explorer));
         stage.show();
+    }
+
+    private void refresh(Directory tobe) {
         TilePane tiles = new TilePane();
         tiles.setPrefColumns(8);
         tiles.setHgap(25);
@@ -31,8 +38,8 @@ public class FileChooser {
         tiles.setPadding(new Insets(20));
         tiles.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
         populateTiles(tiles, tobe);
+
         explorer.setCenter(tiles);
-        stage.setScene(new Scene(explorer));
     }
 
     private void populateTiles(TilePane tiles, Directory tobe) {
@@ -47,9 +54,6 @@ public class FileChooser {
             setIcon(dir, view[i]);
             view[i].setOnMouseClicked(event -> {
                 if(event.getButton().equals(MouseButton.PRIMARY)) {
-                    if(event.getClickCount() == 1) {
-                        fileSystem.select(dir);
-                    }
                     if(event.getClickCount() == 2) {
                         if (dir instanceof Folder) {
                             fileSystem.open(dir);
@@ -72,6 +76,7 @@ public class FileChooser {
                 currView.setScaleX(1);
                 currView.setScaleY(1);
             });
+
             if(dir.parent == null && dir.isHidden) { tiles.getChildren().add(view[i]); }
             else if (dir.parent != null){ tiles.getChildren().add(view[i]); }
         }
@@ -109,17 +114,6 @@ public class FileChooser {
                     break;
             }
         }
-    }
-
-    private void refresh(Directory tobe) {
-        TilePane tiles = new TilePane();
-        tiles.setPrefColumns(8);
-        tiles.setHgap(25);
-        tiles.setVgap(30);
-        tiles.setPadding(new Insets(20));
-        tiles.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-        populateTiles(tiles, tobe);
-        explorer.setCenter(tiles);
     }
 
     public String getSelectedFilePath() {

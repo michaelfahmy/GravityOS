@@ -1,8 +1,5 @@
 package sfe.os;
-import apps.NotaPad;
-import apps.ImageViewer;
-import apps.MyMedia;
-import apps.WebBrowser;
+import apps.*;
 
 import java.io.*;
 import java.util.LinkedList;
@@ -52,13 +49,11 @@ class File extends Directory {
 
     String permission;
     String extension;
-    String fileUrl;
 
     public File(String name, String extension, String path, Folder parent, String permission) {
         super(name + "." + extension, path, parent);
         this.permission = permission;
         this.extension = extension;
-        this.fileUrl = fileUrl;
     }
 }
 
@@ -66,18 +61,18 @@ public class FileSystem {
 
     private static final String COPY_PROCESS = "copy";
     private static final String CUT_PROCESS = "cut";
-    private Folder root, currentFolder, resFolder;
+
+    private Folder root, currentFolder, storage;
     private Directory selected = null;
-    Directory toBePasted = null;
-    String whichProcess = COPY_PROCESS;
+    Directory toBePasted;
+    String whichProcess;
 
     public FileSystem() {
         root = new Folder("root", "", null);
-        resFolder = new Folder("resFolder", "/resFolder", root);
-        resFolder.setHidden();
-        root.children.add(resFolder);
-        this.seeds(resFolder, "src/res");
         currentFolder = root;
+        Folder storage = newFolder("home");
+        storage.setHidden();
+        this.seeds(storage, "src/storage");
         this.retrieve();
     }
 
@@ -93,15 +88,18 @@ public class FileSystem {
         return currentFolder;
     }
 
-    void newFolder(String name) {
+    Folder newFolder(String name) {
         String path = this.currentFolder.path + "/" + name;
         Folder child = new Folder(name, path, this.currentFolder);
         this.currentFolder.children.add(child);
+        return child;
     }
-    void newFile(String name, String ext, String permission) {
+
+    File newFile(String name, String ext, String permission) {
         String path = this.currentFolder.path + "/" + name + ext;
         File child = new File(name, ext, path, this.currentFolder, permission);
         this.currentFolder.children.add(child);
+        return child;
     }
 
     void rename(Directory toBeRenamed, String name) {
@@ -131,7 +129,7 @@ public class FileSystem {
                     switch (((File) toBeOpened).extension) {
                         case "txt":
                             System.out.println("Opening text editor");
-                            new NotaPad();
+                            new TextEditor();
                             break;
                         case "jpg":
                             System.out.println("Opening image viewer");
@@ -147,7 +145,7 @@ public class FileSystem {
                             break;
                         case "pdf":
                             System.out.println("Opening pdf viewer");
-//                            new PDFViewer(toBeOpened.getRealPath());
+                            new PDFViewer(toBeOpened.getRealPath());
                             break;
                         case "html":
                             System.out.println("Opening browser");
@@ -231,7 +229,7 @@ public class FileSystem {
                 Folder folder = new Folder(name, currPos.path + "/" + name, currPos);
                 folder.setRealPath(currFile.getPath());
                 currPos.children.add(folder);
-                seeds((Folder) folder, currFile.getPath());
+                seeds(folder, currFile.getPath());
             }else {
                 name = currFile.getName().substring(0, currFile.getName().indexOf('.'));
                 extension = currFile.getName().substring(currFile.getName().indexOf('.') + 1);
