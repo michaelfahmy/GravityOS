@@ -19,6 +19,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import sfe.os.CPU;
 import sfe.os.FileChooser;
 
 import java.io.File;
@@ -30,12 +31,16 @@ public class FXMediaPlayer {
     private Label currentlyPlaying = new Label();
     private ProgressBar progress = new ProgressBar();
     private ChangeListener<Duration> progressChangeListener;
+    static CPU cpu;
     boolean playing = false;
     Label play = new Label();
     private File f = null;
     private String type = "mp3";
+    int id;
 
-    public FXMediaPlayer(File file) {
+    public FXMediaPlayer(File file, int id, CPU cpu) {
+        this.id = id;
+        this.cpu = cpu;
         stage = new Stage();
         stage.setTitle("Media Player");
 
@@ -45,7 +50,11 @@ public class FXMediaPlayer {
         }
 
         stage.setScene(createScene());
-        stage.setOnCloseRequest(event -> closeApp());
+        stage.setOnCloseRequest(event -> {
+            closeApp();
+            cpu.RemoveProcess(id);
+            System.out.println("FXMediaPlayer with id" + id + "is closed");
+        });
         stage.show();
     }
 
@@ -68,9 +77,9 @@ public class FXMediaPlayer {
         Menu fileMenu = new Menu("File");
         MenuItem open = new MenuItem("Open...");
         open.setOnAction(event -> {
-            new FileChooser("mp3", "", "open");
+            new FileChooser("mp3", "", "open", cpu);
             stage.close();
-        } );
+        });
         MenuItem close = new MenuItem("Exit");
         close.setOnAction(event -> closeApp());
         fileMenu.getItems().addAll(open, close);

@@ -24,9 +24,9 @@ public class Explorer {
     private BorderPane explorer;
     private Button back;
     private boolean mark=false;
-
-
-    public Explorer() {
+    static  CPU cpu=new CPU();
+    public Explorer(CPU cpu) {
+        this.cpu=cpu;
         stage = new Stage();
         stage.setTitle("Explorer");
         stage.setHeight(600);
@@ -132,7 +132,6 @@ public class Explorer {
         explorer.setBottom(urlBar());
         populateTiles(tiles);
         explorer.setCenter(tiles);
-
     }
 
     private Label urlBar() {
@@ -141,7 +140,6 @@ public class Explorer {
         path.setStyle("-fx-font-size: 13; -fx-font-family: cursive; -fx-label-padding: 5; -fx-background-color: aliceblue; -fx-opacity: 0.4;");
         return path;
     }
-
 
     private void populateTiles(TilePane tiles) {
         Label view[] = new Label[Main.fileSystem.getCurrentFolder().getChildren().size()];
@@ -229,7 +227,7 @@ public class Explorer {
         SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
         rightClickMenu4Tiles.getItems().addAll(newFolderItem, newFileItem, separatorMenuItem1, pasteItem, separatorMenuItem2, propertiesItem);
         if(event.getButton().equals(MouseButton.SECONDARY)
-            && (!event.getTarget().toString().contains("label") && !event.getTarget().toString().contains("Label"))) {
+                && (!event.getTarget().toString().contains("label") && !event.getTarget().toString().contains("Label"))) {
             mark = false;
             Main.fileSystem.select(null, null);
             rightClickMenu4Tiles.show(explorer, event.getScreenX(), event.getScreenY());

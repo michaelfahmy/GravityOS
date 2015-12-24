@@ -25,6 +25,7 @@ public class Main extends Application {
 
     Stage mainStage;
     public static FileSystem fileSystem;
+    static CPU cpu = new CPU();
     public static void main(String[] args) {
         launch(args);
     }
@@ -36,7 +37,7 @@ public class Main extends Application {
         primaryStage.setFullScreen(true);
         primaryStage.setFullScreenExitHint("");
         primaryStage.setScene(desktopScene());
-        fileSystem = new FileSystem();
+        fileSystem = new FileSystem(cpu);
         primaryStage.show();
     }
 
@@ -66,7 +67,6 @@ public class Main extends Application {
 
     private HBox apps() {
         HBox appsBar = new HBox(10);
-
         Label fileExplorer = new Label(null, new ImageView("res/FileExplorer.png"));
         fileExplorer.setAlignment(Pos.CENTER);
         fileExplorer.setOnMouseEntered(event1 -> {
@@ -80,7 +80,7 @@ public class Main extends Application {
         fileExplorer.setOnMouseClicked(event -> {
             if(event.getButton().equals(MouseButton.PRIMARY)) {
                 if(event.getClickCount() == 1) {
-                    new Explorer();
+                    new Explorer(cpu);
                 }
             }
         });
@@ -98,11 +98,13 @@ public class Main extends Application {
         imageViewerApp.setOnMouseClicked(event -> {
             if(event.getButton().equals(MouseButton.PRIMARY)) {
                 if(event.getClickCount() == 1) {
-                    new ImageViewer(null);
+                    Process p=new Process("Image viewer");
+                    cpu.addProcess(p);
+                    cpu.RR_Schedule();
+                    new ImageViewer(null,p.getId(), cpu);
                 }
             }
         });
-
         Label memoApp = new Label(null, new ImageView("res/Memo.png"));
         memoApp.setAlignment(Pos.CENTER);
         memoApp.setOnMouseEntered(event1 -> {
@@ -116,11 +118,15 @@ public class Main extends Application {
         memoApp.setOnMouseClicked(event -> {
             if(event.getButton().equals(MouseButton.PRIMARY)) {
                 if(event.getClickCount() == 1) {
-                    new Memo(null);
+                    Process p = new Process("TextEditor");
+                    cpu.addProcess(p);
+                    if(cpu.list.size()==1){
+                        cpu.RR_Schedule();
+                    }
+                    new Memo(null, p.getId(), cpu);
                 }
             }
         });
-
         Label musicPlayerApp = new Label(null, new ImageView("res/MusicPlayer.png"));
         musicPlayerApp.setAlignment(Pos.CENTER);
         musicPlayerApp.setOnMouseEntered(event1 -> {
@@ -134,7 +140,12 @@ public class Main extends Application {
         musicPlayerApp.setOnMouseClicked(event -> {
             if(event.getButton().equals(MouseButton.PRIMARY)) {
                 if(event.getClickCount() == 1) {
-                    new FXMediaPlayer(null);
+                    Process p = new Process("MusicPlayer");
+                    cpu.addProcess(p);
+                    if(cpu.list.size()==1){
+                        cpu.RR_Schedule();
+                    }
+                    new FXMediaPlayer(null, p.getId(), cpu);
                 }
             }
         });
@@ -152,7 +163,9 @@ public class Main extends Application {
         videoPlayerApp.setOnMouseClicked(event -> {
             if(event.getButton().equals(MouseButton.PRIMARY)) {
                 if(event.getClickCount() == 1) {
-                    new FXMediaPlayer(null);
+                    Process p1 = new Process("MediaPlayer");
+                    cpu.addProcess(p1);
+                    new FXMediaPlayer(null, p1.getId(), cpu);
                 }
             }
         });
@@ -171,7 +184,12 @@ public class Main extends Application {
             if(event.getButton().equals(MouseButton.PRIMARY)) {
                 if(event.getClickCount() == 1) {
                     System.out.println("Opening the WebBrowser...");
-                    new WebBrowser(WebBrowser.defaultUrl);
+                    Process p = new Process("WebBrowser");
+                    cpu.addProcess(p);
+                    if(cpu.list.size()==1){
+                        cpu.RR_Schedule();
+                    }
+                    new WebBrowser(WebBrowser.defaultUrl, p.getId(), cpu);
                 }
             }
         });
@@ -220,15 +238,15 @@ public class Main extends Application {
     private HBox clock() {
         Label label = new Label();
         Timeline timeline = new Timeline(
-            new KeyFrame(Duration.seconds(0), actionEvent -> {
-                Calendar time = Calendar.getInstance();
-                String hourString = StringUtilities.pad(2, ' ', time.get(Calendar.HOUR) == 0 ? "12" : time.get(Calendar.HOUR) + "");
-                String minuteString = StringUtilities.pad(2, '0', time.get(Calendar.MINUTE) + "");
-                String secondString = StringUtilities.pad(2, '0', time.get(Calendar.SECOND) + "");
-                String ampmString = time.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM";
-                label.setText(hourString + ":" + minuteString + ":" + secondString + " " + ampmString + "\n" + new SimpleDateFormat("dd/MM/yyyy").format(time.getTime()));
-            }),
-            new KeyFrame(Duration.seconds(1)));
+                new KeyFrame(Duration.seconds(0), actionEvent -> {
+                    Calendar time = Calendar.getInstance();
+                    String hourString = StringUtilities.pad(2, ' ', time.get(Calendar.HOUR) == 0 ? "12" : time.get(Calendar.HOUR) + "");
+                    String minuteString = StringUtilities.pad(2, '0', time.get(Calendar.MINUTE) + "");
+                    String secondString = StringUtilities.pad(2, '0', time.get(Calendar.SECOND) + "");
+                    String ampmString = time.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM";
+                    label.setText(hourString + ":" + minuteString + ":" + secondString + " " + ampmString + "\n" + new SimpleDateFormat("dd/MM/yyyy").format(time.getTime()));
+                }),
+                new KeyFrame(Duration.seconds(1)));
 
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();

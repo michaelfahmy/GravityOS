@@ -20,8 +20,9 @@ public class FileChooser {
     private String SAVE = "save", operation = SAVE, realPath, fileExtension;
     TextField fileName = new TextField();
     HBox hBox;
-
-    public FileChooser(String fileExtension, String realPath, String operation) {
+    static  CPU cpu;
+    public FileChooser(String fileExtension, String realPath, String operation,CPU cpu) {
+        this.cpu = cpu;
         this.operation = operation;
         this.realPath = realPath;
         this.fileExtension = fileExtension;

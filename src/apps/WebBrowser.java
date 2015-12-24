@@ -3,6 +3,7 @@ package apps;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -18,6 +19,11 @@ import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import sfe.os.CPU;
+
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -38,8 +44,10 @@ public class WebBrowser {
     ComboBox webHistoryComboBox;
     TextField url;
     ProgressIndicator progress = new ProgressIndicator();
+    int id;
 
-    public WebBrowser(String fileUrl) {
+    public WebBrowser(String fileUrl, int id, CPU cpu) {
+        this.id = id;
         this.fileUrl = fileUrl;
         Stage stage = new Stage();
         stage.setTitle("Browser");
@@ -48,6 +56,14 @@ public class WebBrowser {
         if (!checkIntConnection(defaultUrl)) {
             alert();
         }
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                System.out.println("WebBrowser with id :" + id + " Is removed");
+                cpu.RemoveProcess(id);
+            }
+        });
+
     }
 
     public boolean checkIntConnection(String url) {
@@ -84,7 +100,6 @@ public class WebBrowser {
         url.setPrefWidth(800);
         browser = new WebView();
         engine = browser.getEngine();
-
         backButton = new Label(null, new ImageView(new Image("res/BrowserIcons/back.png")));
         backButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> backButton.setEffect(new Glow(0.5)));
         backButton.addEventHandler(MouseEvent.MOUSE_EXITED, event -> backButton.setEffect(null));
@@ -98,7 +113,7 @@ public class WebBrowser {
 
         forwardButton = new Label(null, new ImageView(new Image("res/BrowserIcons/forward.png")));
         forwardButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> forwardButton.setEffect(new Glow(0.5)));
-        forwardButton.addEventHandler(MouseEvent.MOUSE_EXITED, event-> forwardButton.setEffect(null));
+        forwardButton.addEventHandler(MouseEvent.MOUSE_EXITED, event -> forwardButton.setEffect(null));
         forwardButton.setOnMouseClicked(e -> {
             if (!checkIntConnection(defaultUrl)) {
                 alert();
@@ -206,7 +221,7 @@ public class WebBrowser {
         ObservableList<WebHistory.Entry> entryList = history.getEntries();
         int currentIndex = history.getCurrentIndex();
 
-        Platform.runLater(() -> history.go(- 1));
+        Platform.runLater(() -> history.go(-1));
 
         if (currentIndex > 1) {
             entryList.get(currentIndex - 1);
@@ -251,6 +266,5 @@ public class WebBrowser {
             }
         }
     }
-
 
 }

@@ -1,35 +1,57 @@
 package sfe.os;
 
 import java.util.LinkedList;
-
-
+import java.util.concurrent.*;
+import java.util.Timer;
+import java.util.TimerTask;
 class Process {
-
-    private int size;
-    private int duration;
+    private String type;
+    private int duration=0;
     private String data;
-    public int id;
-    int remaining_time;
+    private int id;
+    private int LogicalAddress=0;
+    private int physicalAddress;
+    int offset=0;
+    int size=0;
 
-    public Process(int size, int duration, int id) {
-        this.size = size;
-        this.duration = duration;
-        remaining_time = duration;
-        this.id = id;
+    public Process(int id) {
+        this.id=id;
     }
 
-    public void setSize(int size) {
-        this.size = size;
+    public void setId(int id)
+    {
+        this.id=id;
     }
+    public int getId()
+    {
+        return  id;
+    }
+    public void setVirtualAddress(int virtualAddress)
+    {
+        this.LogicalAddress=virtualAddress;
+    }
+    public int getVirtualAddress()
+    {
+        return  LogicalAddress;
+    }
+
+    public void setPhysicalAddress(int PhysicalAddress)
+    {
+        this.physicalAddress=PhysicalAddress;
+    }
+    public int getPhysicalAddress()
+    {
+        return physicalAddress;
+    }
+
+    public Process( String type) {
+        this.type=type;
+    }
+
 
     public void setDuration(int duration) {
         this.duration = duration;
     }
-
-    public int getSize() {
-        return size;
-    }
-
     public int getDuration() {
         return duration;
     }
@@ -37,87 +59,122 @@ class Process {
     public String getData() {
         return data;
     }
-}
-
-public class CPU {
-    int index=0;
-    Memory memory;
-    LinkedList<Process> list=new LinkedList<>() ;
-    public CPU () {
-        this.memory = new Memory();
+    public void setData(String data){this.data=data;}
+    public String getType() {
+        return type;
     }
 
-    public void addProcess(Process e,int index,LinkedList list) {
+}
 
-        if (memory.write(e.id, e.getData())) {
+public class CPU  {
+    int id=0;
+    static int k = 0;
+    int quantum = 10;
+    int index=0;
+    Memory memory;
+    int LogicalAddressPage=0;
+    int offset=0;
+    public static LinkedList<Process> list=new LinkedList<>() ;
+    public CPU () {
+        this.memory = new Memory();
+
+    }
+
+    public  Process getProcess(int id)
+    {
+        for(int i=0;i<list.size();i++)
+        {
+            if(list.get(i).getId()==id)
+            {
+                return  list.get(i);
+            }
+        }
+        return new Process(id);
+    }
+    public void addProcess(Process e) {
+
+        if(LogicalAddressPage<3){
+            if(offset>1){
+                e.setVirtualAddress(++LogicalAddressPage);
+                e.offset=0;
+                offset=1;
+            }
+            else{
+                e.setVirtualAddress(LogicalAddressPage);
+                e.offset=offset++;
+            }
+            switch (e.getVirtualAddress()) {
+                case 0:
+                    System.out.println("this process has avirtual address is 00" + e.offset);
+                    break;
+                case 1:
+                    System.out.println("this process has avirtual address is 01" + e.offset);
+                    break;
+                case 2:
+                    System.out.println("this process has avirtual address is 10" + e.offset);
+                    break;
+                case 3:
+                    System.out.println("this process has avirtual address is 11" + e.offset);
+                    break;
+
+            }
+            e.setId(id++);
+            Mapper(e);
+        }
+        else
+        {
+            System.out.println("Error memory full");
+        }
+
+    }
+    public void RR_Schedule() {
+        int delay = 2000;
+        int period = 2000;
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                if(!list.isEmpty()){
+                    if(k>=list.size())
+                    {
+                        k=0;
+                    }
+                    index=k;
+                    System.out.println("running process "+list.get(k++).getId());}
+
+            }
+        }, delay, period);
+
+    }
+
+
+    public void RemoveProcess(int id)
+    {
+        memory.del(id);
+        list.remove(getProcess(id));
+        System.out.println("the number of process running in cpu now is "+list.size());
+    }
+
+
+    public void Mapper( Process e){
+        if (memory.write(e.offset,e.getPhysicalAddress(),e.getId(), e.getData(),e)){
             if (!list.isEmpty()) {
                 list.add((index + 1), e);
             } else {
                 list.add(e);
             }
+            k = list.indexOf(e);
 
-            System.out.println("process " + e.id + " is added ");
         } else {
 
-            memory.replace(e.id, e.getData());
-            if (list.isEmpty()) {
+            memory.replace(e.getId(), e.getData(),e);
+            if (!list.isEmpty()) {
                 list.add((index + 1), e);
             } else {
                 list.add(e);
-            }
+            }}
 
-            System.out.println("process " + e.id + " is added ");
-        }
+
+
+        System.out.println("process " + e.getId() + " is added in Ram and "+"it's Type "+e.getType());
     }
 }
-
-
-class Schedular {
-
-    CPU Cpu;
-    int k = 0;
-    public int id = 0;
-    int count = 0;
-    int quantum = 10;
-    int index = 0;
-    LinkedList<Process> list;
-
-    public Schedular() {
-        this.Cpu = new CPU();
-        list = new LinkedList<>();
-    }
-
-    public void RR_Schedule() {
-
-        Process p1 = new Process(100, 50, ++id);
-        Process p2 = new Process(100, 40, ++id);
-        Cpu.addProcess(p1,index,list);
-        Cpu.addProcess(p2,index,list);
-
-        while (!list.isEmpty()) {
-            count++;
-            for (int i = k; i < list.size(); i++) {
-                index = i;
-                if (list.get(i).remaining_time > quantum) {
-                    list.get(i).remaining_time -= quantum;
-
-                    System.out.println(" process " + list.get(i).id + "remaining time is " + list.get(i).remaining_time);
-
-                } else {
-                    System.out.println("process " + list.get(i).id + " is finished");
-                    Cpu.memory.del(list.get(i).id);
-                    list.remove(i);
-                    i--;
-                }
-            }
-            k = 0;
-            if (count == 1) {
-                Process p3 = new Process(100, 70, ++id);
-                Cpu.addProcess(p3,index,list);
-                k = list.indexOf(p3);
-            }
-        }
-
-    }
-}
-
