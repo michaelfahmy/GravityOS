@@ -214,7 +214,7 @@ public class FileSystem {
                 extension = currFile.getName().substring(currFile.getName().indexOf('.') + 1);
                 permission = extension.equals(".txt") ? "r/w" : "r";
                 File fle = new File(name, extension, currPos.getPath() + "/" + name + "." + extension,currPos, permission);
-                fle.setRealPath(currFile.toURI().toString());
+                fle.setRealPath(currFile.getAbsolutePath());
                 currPos.getChildren().add(fle);
             }
         }
