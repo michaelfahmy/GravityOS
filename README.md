@@ -5,24 +5,23 @@ Virtual Operating System Demo
 Gravity OS simulates real Operating Systems, with awesome user interface, and high functionality via built-in apps.
 Gravity OS tracks processes inside our virtual OS via IDE log and recording every detail about it.
 
-#####Modules implemented:
+Modules implemented:
 - File system module.
 - Memory management module.
 - Processing module.
 - File Explorer
 - File Chooser
 
-#####Apps provided: 
+Apps provided:
+- Text Editor 
 - Image Viewer
-- Text Editor
 - Media Player (Audio and Video)
 - Web Browser
-- PDF Viewer
 - Calculator
 - Tic Tac Toe Game
 
 
-#####To use media on Ubuntu
+#####Dependencies required for Ubuntu
 
 you need to download these libraries
 
